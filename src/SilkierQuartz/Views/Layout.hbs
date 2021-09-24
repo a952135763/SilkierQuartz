@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <title>{{ViewBag.Title}} - SilkierQuartz</title>
+    <title>{{ViewBag.Title}} - 工作调度</title>
 
     <link rel="icon" type="image/png" sizes="16x16" href="Content/Images/favicons/favicon-16.png">
     <link rel="icon" type="image/png" sizes="24x24" href="Content/Images/favicons/favicon-24.png">
@@ -37,17 +37,17 @@
             <div class="ui header item">
                 <img class="logo" src="{{Logo}}">
                 <a class="navbar-brand" href="{{BaseUrl}}">
-                    {{ProductName}} 任务调度
+                    {{ProductName}} 工作调度
                 </a>
             </div>
 
-            {{MenuItemActionLink title='Overview' controller='Scheduler'}}
-            {{MenuItemActionLink 'Jobs'}}
-            {{MenuItemActionLink 'Triggers'}}
-            {{MenuItemActionLink 'Executions'}}
-            {{MenuItemActionLink 'History'}}
-            {{MenuItemActionLink 'Calendars'}}
-            {{MenuItemActionLink title='Logout' controller='Authenticate/Logout'}}
+            {{MenuItemActionLink controller='Scheduler' title='信息'}}
+            {{MenuItemActionLink controller='Jobs' title='工作信息'}}
+            {{MenuItemActionLink controller='Triggers' title='执行计划'}}
+            {{MenuItemActionLink controller='Executions' title='运行中的'}}
+            {{MenuItemActionLink controller='History' title='运行日志'}}
+            {{MenuItemActionLink controller='Calendars' title='排除日期'}}
+            {{MenuItemActionLink controller='Authenticate/Logout' title='退出登录'}}
 
             <!--
     <div class="right menu">

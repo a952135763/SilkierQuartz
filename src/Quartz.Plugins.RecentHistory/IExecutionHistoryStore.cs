@@ -18,6 +18,8 @@ namespace Quartz.Plugins.RecentHistory
         public bool Vetoed { get; set; }
         public DateTime? FinishedTimeUtc { get; set; }
         public string ExceptionMessage { get; set; }
+        public bool Cancelled { get; set; }
+
     }
 
     //todo::实现接口 以便把运行日志写入数据库
@@ -38,5 +40,6 @@ namespace Quartz.Plugins.RecentHistory
 
         Task IncrementTotalJobsExecuted();
         Task IncrementTotalJobsFailed();
+
     }
 }

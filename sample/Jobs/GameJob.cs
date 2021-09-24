@@ -111,7 +111,7 @@ namespace Jobs
             if (!string.IsNullOrEmpty(info.error))
             {
                 //任务没有正常完成,抛出错误!
-                throw new Exception(info.error);
+                throw new JobExecutionException(info.error);
             }
             else
             {

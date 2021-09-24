@@ -43,40 +43,40 @@
 
     <div class="ui stackable grid">
         <div class="seven wide column" style="padding-right: 14px !important">
-            <h3 class="ui dividing header">Status</h3>
+            <h3 class="ui dividing header">运行状态</h3>
             <table class="ui table">
                 <tbody>
                     <tr>
-                        <td style="min-width: 220px">In Standby Mode</td>
+                        <td style="min-width: 220px">待机模式</td>
                         <td>{{Upper MetaData.InStandbyMode}}</td>
                     </tr>
                     <tr>
-                       <td>Running Since</td>
+                       <td>运行时间</td>
                         <td>{{RunningSince}} {{UtcLabel}}</td>
                     </tr>
                     <tr>
-                        <td>Shutdown</td>
+                        <td>关闭</td>
                         <td>{{Upper MetaData.Shutdown}}</td>
                     </tr>
                     <tr>
-                        <td>Started</td>
+                        <td>运行中..</td>
                         <td>{{Upper MetaData.Started}}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <div class="nine wide column" id="col-actions">
-            <h3 class="ui dividing header">Actions</h3>
+            <h3 class="ui dividing header">操作</h3>
 
             <p style="margin-top: 1em">
                 {{#if MetaData.InStandbyMode}}
-                <button class="ui small button green" id="btn-start"><i class="play icon"></i>Start</button>
+                <button class="ui small button green" id="btn-start"><i class="play icon"></i>运行</button>
                 {{else}}
-                <button class="ui small button grey" id="btn-standby"><i class="stop icon"></i>Standby</button>
+                <button class="ui small button grey" id="btn-standby"><i class="stop icon"></i>待机</button>
                 {{/if}}
-                <button class="ui small button red" id="btn-shutdown"><i class="power icon"></i>Shutdown</button>
-                <button class="ui small button" id="btn-pause"><i class="pause icon"></i>Pause All</button>
-                <button class="ui small button" id="btn-resume"><i class="play icon"></i>Resume All</button>
+                <button class="ui small button red" id="btn-shutdown"><i class="power icon"></i>关闭</button>
+                <button class="ui small button" id="btn-pause"><i class="pause icon"></i>暂停所有</button>
+                <button class="ui small button" id="btn-resume"><i class="play icon"></i>恢复所有</button>
             </p>
 
             {{>GroupActions items=JobGroups id='job-groups' header='Job Groups'}}
@@ -155,12 +155,14 @@
 
 <div class="ui mini modal" id="shutdown-dialog">
     <div class="content">
-        <p>Are you sure you want to shut down Quartz Scheduler?</p>
-        <p>This action <b>is not reversible</b> which means, you will not be able to connect to this page any more!</p>
+        <p>你确认需要关闭?</p>
+        <p>此操作 <b>不可逆</b> 意味着无法再浏览此页面!</p>
+        <p>只能手动重启服务</p>
+
     </div>
     <div class="actions">
-        <div class="ui approve red button">Shutdown</div>
-        <div class="ui cancel button">Cancel</div>
+        <div class="ui approve red button">关闭</div>
+        <div class="ui cancel button">取消</div>
     </div>
 </div>
 

@@ -498,10 +498,10 @@ namespace SilkierQuartz.Models
         {
             var standardMisfireInstructions = new Dictionary<int, string>()
             {
-                [IgnoreMisfirePolicy] = "Ignore Misfire Policy",
-                [InstructionNotSet] = "Instruction Not Set",
-                [CronTrigger.FireOnceNow] = "Fire Once Now",
-                [CronTrigger.DoNothing] = "Do Nothing",
+                [IgnoreMisfirePolicy] = "忽略",
+                [InstructionNotSet] = "未设置",
+                [CronTrigger.FireOnceNow] = "马上运行一次",
+                [CronTrigger.DoNothing] = "不做操作",
             };
 
             var validMisfireInstructions = new Dictionary<string, Dictionary<int, string>>()
@@ -511,13 +511,13 @@ namespace SilkierQuartz.Models
                 ["daily"] = standardMisfireInstructions,
                 ["simple"] = new Dictionary<int, string>()
                 {
-                    [IgnoreMisfirePolicy] = "Ignore Misfire Policy",
-                    [InstructionNotSet] = "Instruction Not Set",
-                    [SimpleTrigger.FireNow] = "Fire Now",
-                    [SimpleTrigger.RescheduleNowWithExistingRepeatCount] = "Reschedule Now With Existing Repeat Count",
-                    [SimpleTrigger.RescheduleNowWithRemainingRepeatCount] = "Reschedule Now With Remaining Repeat Count",
-                    [SimpleTrigger.RescheduleNextWithRemainingCount] = "Reschedule Next With Remaining Count",
-                    [SimpleTrigger.RescheduleNextWithExistingCount] = "Reschedule Next With Existing Count",
+                    [IgnoreMisfirePolicy] = "忽略",
+                    [InstructionNotSet] = "未设置",
+                    [SimpleTrigger.FireNow] = "马上运行一次",
+                    [SimpleTrigger.RescheduleNowWithExistingRepeatCount] = "立即执行，并重复到指定的次数",
+                    [SimpleTrigger.RescheduleNowWithRemainingRepeatCount] = "立即执行，且超时期内错过的执行机会作废。",
+                    [SimpleTrigger.RescheduleNextWithRemainingCount] = "以现在为基准，延时到下一个激活点执行。",
+                    [SimpleTrigger.RescheduleNextWithExistingCount] = "在下一个激活点执行，并重复到指定的次数。",
                 },
             };
 

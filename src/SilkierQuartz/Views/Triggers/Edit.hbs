@@ -9,14 +9,14 @@
 <form class="ui form" id="form" method="post" enctype="multipart/form-data">
     <div class="ui clearing basic segment" style="padding: 0px" id="header">
         <div style="float: right">
-            <a class="ui button" id="btn-discard" href="{{ActionUrl ''}}">Discard Changes</a>
+            <a class="ui button" id="btn-discard" href="{{ActionUrl ''}}">放弃修改</a>
             {{#unless Model.Trigger.IsNew}}
-            <div class="negative ui button" id="btn-delete">Delete</div>
+            <div class="negative ui button" id="btn-delete">删除</div>
             {{/unless}}
-            <div class="ui primary button" id="btn-save">Save</div>
+            <div class="ui primary button" id="btn-save">保存</div>
         </div>
         <h1 class="ui left floated header">
-            {{#if Model.Trigger.IsNew}}Add Trigger{{else}}Edit Trigger "{{Model.Trigger.TriggerName}}"{{/if}}
+            {{#if Model.Trigger.IsNew}}添加 执行计划{{else}}修改 执行计划"{{Model.Trigger.TriggerName}}"{{/if}}
         </h1>
     </div>
 
@@ -31,18 +31,18 @@
         <div id="trigger-properties">
 
             <div class="field">
-                <label>Trigger Type</label>
+                <label>执行计划类型</label>
                 <div class="inline fields" id="trigger-type-radios">
                     <div class="field">
                         <div class="ui radio checkbox">
                             <input type="radio" name="trigger[type]" value="cron">
-                            <label>Cron</label>
+                            <label>Cron表达式</label>
                         </div>
                     </div>
                     <div class="field">
                         <div class="ui radio checkbox">
                             <input type="radio" name="trigger[type]" value="simple">
-                            <label>Simple</label>
+                            <label>简单重复</label>
                         </div>
                     </div>
                     <div class="field">
@@ -72,11 +72,11 @@
 
             <div class="two fields">
                 <div class="field accept-error">
-                    <label>Trigger Name</label>
+                    <label>执行计划名称</label>
                     <input type="text" name="trigger[triggerName]" placeholder="Trigger Name" value="{{TriggerName}}" id="triggerName" />
                 </div>
                 <div class="field accept-error">
-                    <label>Trigger Group</label>
+                    <label>执行计划分组</label>
                     <input type="hidden" value="{{TriggerGroup}}" id="triggerGroup" />
                     <select class="ui search selection dropdown allow-additions" name="trigger[triggerGroup]">
                         <option value="">Trigger Group</option>
@@ -86,13 +86,13 @@
             </div>
 
             <div class="field accept-error">
-                <label>Description</label>
+                <label>执行计划备注</label>
                 <textarea rows="2" name="trigger[description]">{{Description}}</textarea>
             </div>
 
             <div class="fields">
                 <div class="five wide field accept-error">
-                    <label>Start Date (UTC)</label>
+                    <label>开始时间 (UTC)</label>
                     <div class="ui calendar date-time">
                         <div class="ui fluid input left icon">
                             <i class="calendar alternate outline icon"></i>
@@ -101,7 +101,7 @@
                     </div>
                 </div>
                 <div class="five wide field accept-error">
-                    <label>End Date (UTC)</label>
+                    <label>结束时间 (UTC)</label>
                     <div class="ui calendar date-time">
                         <div class="ui fluid input left icon">
                             <i class="calendar alternate outline icon"></i>
@@ -113,7 +113,7 @@
 
             <div class="fields">
                 <div class="eight wide field accept-error">
-                    <label>Calendar</label>
+                    <label>排除日期</label>
                     <select class="ui fluid dropdown allow-empty" name="trigger[calendarName]" value="{{CalendarName}}">
                         <option value="">--- Not Set ---</option>
                         {{>DropdownOptions items=CalendarNameList selected=CalendarName}}
@@ -123,12 +123,12 @@
 
             <div class="fields">
                 <div class="eight wide field accept-error">
-                    <label>Misfire Instruction</label>
+                    <label>错过时间点操作</label>
                     <input type="hidden" name="trigger[misfireInstruction]" id="selectedMisfireInstruction">
                     <select class="ui fluid dropdown" id="misfireInstructions"></select>
                 </div>
                 <div class="two wide field accept-error">
-                    <label>Priority</label>
+                    <label>优先级</label>
                     <select class="ui search selection dropdown allow-additions" name="trigger[priority]" id="triggerPriority">
                         {{>DropdownOptions items=PriorityList selected=PriorityOrDefault}}
                     </select>
@@ -140,13 +140,13 @@
             <div class="cron trigger-type">
                 <div class="fields">
                     <div class="seven wide field accept-error cron-field">
-                        <label>Cron Expression <a href="http://cronmaker.com" target="_blank"><i class="external alternate icon"></i>http://cronmaker.com</a></label>
+                        <label>Cron 表达式<a href="https://www.bejson.com/othertools/cron/" target="_blank"><i class="external alternate icon"></i>生成</a></label>
                         <input type="text" name="trigger[cron.expression]" placeholder="Cron Expression" id="cron-expression" value="{{Cron.Expression}}" />
                         <div style="float: right; cursor:pointer; display: none" id="next-cron-dates"><i class="eye icon"></i></div>
                         <p id="cron-desc"></p>
                     </div>
                     <div class="nine wide field accept-error">
-                        <label>Time Zone</label>
+                        <label>时区</label>
                         <select class="ui fluid search fulltext selection dropdown allow-empty" name="trigger[cron.timeZone]">
                             <option value="">--- Not Set ---</option>
                             {{>DropdownOptions items=TimeZoneList selected=Cron.TimeZone}}
@@ -158,18 +158,18 @@
             <div class="simple trigger-type">
                 <div class="fields">
                     <div class="four wide field accept-error">
-                        <label>Repeat Interval</label>
-                        <input type="text" name="trigger[simple.repeatInterval]" placeholder="Repeat Interval" value="{{Simple.RepeatInterval}}" />
+                        <label>间隔时间</label>
+                        <input type="text" name="trigger[simple.repeatInterval]" placeholder="间隔时间" value="{{Simple.RepeatInterval}}" />
                     </div>
                     <div class="three wide field accept-error">
-                        <label>Unit</label>
+                        <label>时间单位</label>
                         {{>UnitDropdown name='trigger[simple.repeatUnit]' allowIrregular=false allowMillisecond=true selected=Simple.RepeatUnit}}
                     </div>
                 </div>
 
                 <div class="fields">
                     <div class="four wide field accept-error">
-                        <label>Repeat Count</label>
+                        <label>重复运行次数</label>
                         <input type="text" name="trigger[simple.repeatCount]" placeholder="Repeat Count" id="triggerSimpleRepeatCount" value="{{Simple.RepeatCount}}" {{Disabled Simple.RepeatForever}} />
                     </div>
                 </div>
@@ -177,7 +177,7 @@
                 <div class="field">
                     <div class="ui checkbox">
                         <input name="trigger[simple.repeatForever]" type="checkbox" value="True" data-toggle-input="triggerSimpleRepeatCount" {{Checked Simple.RepeatForever}} />
-                        <label>Repeat Forever</label>
+                        <label>无限重复</label>
                     </div>
                 </div>
 
@@ -186,15 +186,15 @@
             <div class="calendar trigger-type">
                 <div class="fields">
                     <div class="four wide field accept-error">
-                        <label>Repeat Interval</label>
-                        <input type="text" name="trigger[calendar.repeatInterval]" placeholder="Repeat Interval" value="{{Calendar.RepeatInterval}}" />
+                        <label>间隔时间</label>
+                        <input type="text" name="trigger[calendar.repeatInterval]" placeholder="间隔时间" value="{{Calendar.RepeatInterval}}" />
                     </div>
                     <div class="three wide field accept-error">
-                        <label>Unit</label>
+                        <label>时间单位</label>
                         {{>UnitDropdown name='trigger[calendar.repeatUnit]' allowIrregular=true allowMillisecond=true selected=Calendar.RepeatUnit}}
                     </div>
                     <div class="nine wide field accept-error">
-                        <label>Time Zone</label>
+                        <label>时区</label>
                         <select class="ui fluid search fulltext selection dropdown allow-empty" name="trigger[calendar.timeZone]">
                             <option value="">--- Not Set ---</option>
                             {{>DropdownOptions items=TimeZoneList selected=Calendar.TimeZone}}
@@ -220,15 +220,15 @@
             <div class="daily trigger-type">
                 <div class="fields">
                     <div class="four wide field accept-error">
-                        <label>Repeat Interval</label>
+                        <label>间隔时间</label>
                         <input type="text" name="trigger[daily.repeatInterval]" placeholder="Repeat Interval" value="{{Daily.RepeatInterval}}" />
                     </div>
                     <div class="three wide field accept-error">
-                        <label>Unit</label>
+                        <label>时间单位</label>
                         {{>UnitDropdown name='trigger[daily.repeatUnit]' allowIrregular=false allowMillisecond=false selected=Daily.RepeatUnit}}
                     </div>
                     <div class="nine wide field accept-error">
-                        <label>Time Zone</label>
+                        <label>时区</label>
                         <select class="ui fluid search fulltext selection dropdown allow-empty" name="trigger[daily.timeZone]">
                             <option value="">--- Not Set ---</option>
                             {{>DropdownOptions items=TimeZoneList selected=Daily.TimeZone}}
@@ -238,7 +238,7 @@
 
                 <div class="fields">
                     <div class="four wide field accept-error">
-                        <label>Repeat Count</label>
+                        <label>重复次数</label>
                         <input type="text" name="trigger[daily.repeatCount]" placeholder="Repeat Count" id="triggerDailyRepeatCount" value="{{Daily.RepeatCount}}" {{Disabled Daily.RepeatForever}} />
                     </div>
                 </div>
@@ -246,7 +246,7 @@
                 <div class="field">
                     <div class="ui checkbox">
                         <input name="trigger[daily.repeatForever]" type="checkbox" value="True" data-toggle-input="triggerDailyRepeatCount" {{Checked Daily.RepeatForever}}>
-                        <label>Repeat Forever</label>
+                        <label>无限重复</label>
                     </div>
                 </div>
 
@@ -278,43 +278,43 @@
                         <div class="field">
                             <div class="ui checkbox">
                                 <input type="checkbox" name="trigger[daily.daysOfWeek.monday]" value="True" {{Checked Monday}} />
-                                <label>Monday</label>
+                                <label>星期一</label>
                             </div>
                         </div>
                         <div class="field">
                             <div class="ui checkbox">
                                 <input type="checkbox" name="trigger[daily.daysOfWeek.tuesday]" value="True" {{Checked Tuesday}} />
-                                <label>Tuesday</label>
+                                <label>星期二</label>
                             </div>
                         </div>
                         <div class="field">
                             <div class="ui checkbox">
                                 <input type="checkbox" name="trigger[daily.daysOfWeek.wednesday]" value="True" {{Checked Wednesday}} />
-                                <label>Wednesday</label>
+                                <label>星期三</label>
                             </div>
                         </div>
                         <div class="field">
                             <div class="ui checkbox">
                                 <input type="checkbox" name="trigger[daily.daysOfWeek.thursday]" value="True" {{Checked Thursday}} />
-                                <label>Thursday</label>
+                                <label>星期四</label>
                             </div>
                         </div>
                         <div class="field">
                             <div class="ui checkbox">
                                 <input type="checkbox" name="trigger[daily.daysOfWeek.friday]" value="True" {{Checked Friday}} />
-                                <label>Friday</label>
+                                <label>星期五</label>
                             </div>
                         </div>
                         <div class="field">
                             <div class="ui checkbox">
                                 <input type="checkbox" name="trigger[daily.daysOfWeek.saturday]" value="True" {{Checked Saturday}} />
-                                <label>Saturday</label>
+                                <label>星期六</label>
                             </div>
                         </div>
                         <div class="field">
                             <div class="ui checkbox">
                                 <input type="checkbox" name="trigger[daily.daysOfWeek.sunday]" value="True" {{Checked Sunday}} />
-                                <label>Sunday</label>
+                                <label>星期日</label>
                             </div>
                         </div>
                     </div>
@@ -324,7 +324,7 @@
 
         </div>
         {{/with}}
-        <h3 class="ui dividing header">Job Data Map</h3>
+        <h3 class="ui dividing header">工作参数信息</h3>
 
         {{>JobDataMap Model.DataMap}}
     </div>
@@ -332,12 +332,12 @@
 
 <div class="ui mini modal" id="delete-dialog">
     <div class="content">
-        <p>Are you sure you want to delete this trigger?</p>
+        <p>是否确定删除?</p>
         <p><b class="confirm-item"></b></p>
     </div>
     <div class="actions">
-        <div class="ui approve red button">Delete</div>
-        <div class="ui cancel button">Cancel</div>
+        <div class="ui approve red button">删除</div>
+        <div class="ui cancel button">取消</div>
     </div>
 </div>
 
@@ -376,7 +376,7 @@
             const checkedInput = $('#trigger-type-radios').find(':checked');
             $('.trigger-type').hide();
             $('.' + checkedInput.val() + '.trigger-type').show();
-            $('#specificTriggerHeader').text(checkedInput.closest('.radio').find('label').text() + ' Trigger Properties');
+            $('#specificTriggerHeader').text(checkedInput.closest('.radio').find('label').text() + ' 配置');
 
             $('#misfireInstructions').dropdown('change values', misfireInstrForDropdown(checkedInput.val()));
             $('#misfireInstructions').dropdown('set selected', '0'); // reset misfire instruction to default value

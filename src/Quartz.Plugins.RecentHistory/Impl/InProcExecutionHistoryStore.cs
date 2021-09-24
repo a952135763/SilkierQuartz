@@ -117,5 +117,7 @@ namespace Quartz.Plugins.RecentHistory.Impl
             Interlocked.Increment(ref _totalJobsFailed);
             return Task.FromResult(0);
         }
+
+
     }
 }

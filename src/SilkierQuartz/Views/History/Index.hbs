@@ -1,24 +1,24 @@
 ﻿{{!<Layout}}
-{{ViewBag Title='History'}}
+{{ViewBag Title='运行日志'}}
 
 {{#if ViewBag.HistoryEnabled}}
 
 {{#if Model}}
 <div class="ui message">
     <i class="info circle icon"></i>
-    History is periodicaly purged. Only recent job executions are shown.
+    完善日志记录
 </div>
 {{/if}}
 
 <table class="ui single line table highlight-rows" id="history-list">
     <thead>
         <tr>
-            <th>Job</th>
-            <th>Trigger</th>
-            <th>Scheduled Fire Time</th>
-            <th>Actual Fire Time</th>
-            <th>Finished Time</th>
-            <th>Run Time</th>
+            <th>工作</th>
+            <th>执行器</th>
+            <th>调度时间</th>
+            <th>运行时间</th>
+            <th>完成时间</th>
+            <th>运行耗时</th>
         </tr>
     </thead>
     <tbody>

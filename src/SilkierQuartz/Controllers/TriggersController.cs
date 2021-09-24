@@ -169,6 +169,7 @@ namespace SilkierQuartz.Controllers
                 if (triggerModel.Type == TriggerType.Calendar)
                     triggerModel.Calendar.Apply(builder, triggerModel);
 
+
                 var trigger = builder.Build();
 
                 if (triggerModel.IsNew)

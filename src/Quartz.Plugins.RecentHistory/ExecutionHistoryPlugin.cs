@@ -134,8 +134,10 @@ namespace Quartz.Plugins.RecentHistory
             }
 
             var entry = await _store.Get(context.FireInstanceId);
+            
             if (entry != null)
             {
+                entry.Cancelled = context.CancellationToken.IsCancellationRequested;
                 entry.FinishedTimeUtc = DateTime.UtcNow;
                 entry.ExceptionMessage = jobException?.GetBaseException()?.Message;
                 await _store.Save(entry);
@@ -144,6 +146,7 @@ namespace Quartz.Plugins.RecentHistory
                 await _store.IncrementTotalJobsExecuted();
             else
                 await _store.IncrementTotalJobsFailed();
+
         }
 
         public async Task JobExecutionVetoed(IJobExecutionContext context, CancellationToken cancellationToken = default(CancellationToken))

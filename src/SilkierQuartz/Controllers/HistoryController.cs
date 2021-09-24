@@ -29,7 +29,7 @@ namespace SilkierQuartz.Controllers
             {
                 string state = "Finished", icon = "check";
                 var endTime = h.FinishedTimeUtc;
-
+          
                 if (h.Vetoed)
                 {
                     state = "Vetoed";
@@ -45,6 +45,11 @@ namespace SilkierQuartz.Controllers
                     state = "Running";
                     icon = "play";
                     endTime = DateTime.UtcNow;
+                }
+                else if(h.Cancelled)
+                {
+                    state = "Cancelled";
+                    icon = "exchange";
                 }
 
                 var jobKey = h.Job.Split('.');

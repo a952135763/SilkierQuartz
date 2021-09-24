@@ -1,19 +1,19 @@
 ﻿{{!<Layout}}
-{{ViewBag Title='Trigger Job'}}
+{{ViewBag Title='执行工作'}}
 
 <div class="ui inverted page dimmer" id="dimmer"><div class="ui loader"></div></div>
 <form class="ui form" id="form" method="post" enctype="multipart/form-data">
     <div class="ui clearing basic segment" style="padding: 0px" id="header">
         <div style="float: right">
-            <div class="ui green button" id="btn-trigger"><i class="play icon"></i>Trigger Now</div>
+            <div class="ui green button" id="btn-trigger"><i class="play icon"></i>现在执行</div>
         </div>
-        <h1 class="ui left floated header">{{ViewBag.Group}}.{{ViewBag.JobName}}<a title="Go to edit page" href="{{ActionUrl 'Edit' group=ViewBag.Group name=ViewBag.JobName}}"><i class="external alternate tiny icon"></i></a></h1>
+        <h1 class="ui left floated header">{{ViewBag.Group}}.{{ViewBag.JobName}}<a title="到修改页面" href="{{ActionUrl 'Edit' group=ViewBag.Group name=ViewBag.JobName}}"><i class="external alternate tiny icon"></i></a></h1>
     </div>
 
     <div class="ui segment">
         <input type="hidden" name="name" value="{{ViewBag.JobName}}" id="jobName" />
         <input type="hidden" name="group" value="{{ViewBag.Group}}" id="jobGroup" />
-        <h3 class="ui dividing header" style="margin-top: .3em">Job Data Map Overrides</h3>
+        <h3 class="ui dividing header" style="margin-top: .3em">工作参数信息</h3>
 
         {{>JobDataMap Model}}
     </div>

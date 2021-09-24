@@ -1,5 +1,5 @@
 ﻿{{!<Layout}}
-{{ViewBag Title='Calendars'}}
+{{ViewBag Title='排除日期'}}
 
 <div class="ui inverted page dimmer" id="dimmer"><div class="ui loader"></div></div>
 <div class="ui small left icon input">
@@ -10,7 +10,13 @@
     <i class="plus icon"></i>New
 </a>
 
-<div id="msg-panel"></div>
+<div id="msg-panel">
+    <div class="ui message">
+        <i class="info circle icon"></i>
+        这是指运行排除的时间,比如21点到第二天6点
+        21号-22号等
+    </div>
+</div>
 
 <table class="ui single line table highlight-rows" id="calendar-list">
     <thead>
