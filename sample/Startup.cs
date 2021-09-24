@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -5,8 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Quartz;
-using SilkierQuartz.Example.Jobs;
 using System.Collections.Generic;
+using System.Net;
 
 namespace SilkierQuartz.Example
 {
@@ -31,8 +32,10 @@ namespace SilkierQuartz.Example
                 options.DefaultTimeFormat = "HH:mm:ss";
                 options.CronExpressionOptions = new CronExpressionDescriptor.Options()
                 {
-                    DayOfWeekStartIndexZero = false //Quartz uses 1-7 as the range
+                    DayOfWeekStartIndexZero = false,//Quartz uses 1-7 as the range
+                    Use24HourTimeFormat = true
                 };
+               
             }
 #if ENABLE_AUTH
             ,
@@ -52,14 +55,46 @@ namespace SilkierQuartz.Example
                 authenticationOptions.AccessRequirement = SilkierQuartzAuthenticationOptions.SimpleAccessRequirement.AllowAnonymous;
             }
 #endif
+            ,
+            stdSchedulerFactoryOptions: properties =>
+            {
+
+                //数据库连接信息
+                properties["quartz.jobStore.type"] = "Quartz.Impl.AdoJobStore.JobStoreTX,Quartz";
+                properties["quartz.jobStore.driverDelegateType"] = "Quartz.Impl.AdoJobStore.MySQLDelegate,Quartz";
+                properties["quartz.jobStore.dataSource"] = "myDS";
+
+                //表前缀
+                properties["quartz.jobStore.tablePrefix"] = "QRTZ_";
+                //连接字符串
+                properties["quartz.dataSource.myDS.connectionString"] = "Server=localhost;Database=qze;Uid=root;Pwd=H9MvYSqY3JmAC4aj;SslMode=None";
+                properties["quartz.dataSource.myDS.provider"] = "MySql";
+
+                //json序列化
+                properties["quartz.serializer.type"] = "json";
+                properties["quartz.jobStore.useProperties"] = "true";
+
+                //群集信息
+                properties["quartz.scheduler.instanceName"] = "GameGo";
+                properties["quartz.scheduler.instanceId"] = "AUTO";
+                properties["quartz.jobStore.clustered"] = "true";
+                properties["quartz.jobStore.clusterCheckinInterval"] = "1000";
+
+
+                //最大线程数量
+                properties["quartz.threadPool.maxConcurrency"] = "1";
+
+                //任务监控插件
+                properties["quartz.plugin.recentHistory.type"] = "Quartz.Plugins.RecentHistory.ExecutionHistoryPlugin,Quartz.Plugins.RecentHistory";
+                properties["quartz.plugin.recentHistory.storeType"] = "Quartz.Plugins.RecentHistory.Impl.InProcExecutionHistoryStore, Quartz.Plugins.RecentHistory";
+            } 
             );
             services.AddOptions();
             services.Configure<AppSettings>(Configuration);
             services.Configure<InjectProperty>(options => { options.WriteText = "This is inject string"; });
-            services.AddQuartzJob<HelloJob>()
-                    .AddQuartzJob<InjectSampleJob>()
-                    .AddQuartzJob<HelloJobSingle>()
-                    .AddQuartzJob<InjectSampleJobSingle>();
+            services.AddQuartzJob<Jobs.GameJob>();
+            services.AddQuartzJob<Jobs.TestJob>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -79,44 +114,6 @@ namespace SilkierQuartz.Example
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseSilkierQuartz();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapRazorPages();
-            });
-            //How to compatible old code to SilkierQuartz
-            //将旧的原来的规划Job的代码进行移植兼容的示例
-            // app.SchedulerJobs();
-
-
-            #region  不使用 SilkierQuartzAttribe 属性的进行注册和使用的IJob，这里通过UseQuartzJob的IJob必须在  ConfigureServices进行AddQuartzJob
-
-            app.UseQuartzJob<HelloJobSingle>(TriggerBuilder.Create().WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever()))
-            .UseQuartzJob<InjectSampleJobSingle>(() =>
-            {
-                return TriggerBuilder.Create()
-                   .WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever());
-            });
-
-            app.UseQuartzJob<HelloJob>(new List<TriggerBuilder>
-                {
-                    TriggerBuilder.Create()
-                    .WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever()),
-                    TriggerBuilder.Create()
-                    .WithSimpleSchedule(x => x.WithIntervalInSeconds(2).RepeatForever()),
-                     //Add a sample that uses 1-7 for dow
-                    TriggerBuilder.Create()
-                                  .WithCronSchedule("0 0 2 ? * 7 *"),
-                });
-
-            app.UseQuartzJob<InjectSampleJob>(() =>
-            {
-                var result = new List<TriggerBuilder>();
-                result.Add(TriggerBuilder.Create()
-                    .WithSimpleSchedule(x => x.WithIntervalInSeconds(10).RepeatForever()));
-                return result;
-            });
-            #endregion
         }
     }
 }

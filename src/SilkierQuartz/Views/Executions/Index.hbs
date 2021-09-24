@@ -8,11 +8,11 @@
 <table class="ui single line table highlight-rows" id="execution-list">
     <thead>
         <tr>
-            <th>Job</th>
-            <th>Trigger</th>
-            <th>Scheduled Fire Time</th>
-            <th>Actual Fire Time</th>
-            <th>Run Time</th>
+            <th>工作</th>
+            <th>执行器</th>
+            <th>调度开始时间</th>
+            <th>实际开始时间</th>
+            <th>已运行时间</th>
             <th></th>
         </tr>
     </thead>
@@ -24,7 +24,7 @@
             <td>{{ScheduledFireTime}}</td>
             <td>{{ActualFireTime}}</td>
             <td>{{RunTime}}</td>
-            <td style="text-align: right"><button class="ui super tiny red button btn-interrupt" data-id="{{Id}}"><i class="stop icon"></i>Interrupt</button></td>
+            <td style="text-align: right"><button class="ui super tiny red button btn-interrupt" data-id="{{Id}}"><i class="stop icon"></i>取消</button></td>
         </tr>
         {{/each}}
     </tbody>

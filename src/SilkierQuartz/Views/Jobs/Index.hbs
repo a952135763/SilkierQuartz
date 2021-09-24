@@ -3,16 +3,16 @@
 
 <div class="ui inverted page dimmer" id="dimmer"><div class="ui loader"></div></div>
 <div class="ui small left icon input">
-    <input type="text" placeholder="Search Job..." id="search-job">
+    <input type="text" placeholder="搜索工作" id="search-job">
     <i class="search icon"></i>
 </div>
 <span>&nbsp;</span>
 <div class="ui small floating dropdown labeled search icon button" id="job-group-filter">
     <i class="filter icon"></i>
-    <span class="text">Job Group</span>
+    <span class="text">工作分组</span>
     <div class="menu">
         <div class="header">
-            Filter by group
+            分组筛选
         </div>
         <div class="divider"></div>
         <div class="item" data-show-all="true"><i>All</i></div>
@@ -30,12 +30,12 @@
 <table class="ui single line table highlight-rows" id="job-list">
     <thead>
         <tr>
-            <th>Name</th>
-            <th>Group</th>
-            <th>Class</th>
-            <th style="min-width: 160px">Next Fire Time</th>
-            <th>History</th>
-            <th>Flags</th>
+            <th>名称</th>
+            <th>分组</th>
+            <th>执行目标</th>
+            <th style="min-width: 160px">下次时间</th>
+            <th>日志</th>
+            <th>类型</th>
         </tr>
     </thead>
     <tbody>
@@ -49,9 +49,9 @@
             <td class="next-fire-time"></td>
             <td class="job-histogram">{{>Histogram History}}</td>
             <td>
-                {{#if Persist}}<div class="ui mini green label" title="Persist Job Data">P</div>{{/if}}
-                {{#if Recovery}}<div class="ui mini purple label" title="Request Recovery">R</div>{{/if}}
-                {{#if Concurrent}}<div class="ui mini orange label" title="Concurrent">C</div>{{/if}}
+                {{#if Persist}}<div class="ui mini green label" title="Data数据持久化">P</div>{{/if}}
+                {{#if Recovery}}<div class="ui mini purple label" title="可自动恢复">R</div>{{/if}}
+                {{#if Concurrent}}<div class="ui mini orange label" title="可并发调度">C</div>{{/if}}
             </td>
         </tr>
         {{/each}}
@@ -64,21 +64,21 @@
 
 <div style="display:none">
     <div class="ui small vertical menu borderless" id="job-context-menu">
-        <a class="item menu-edit"><i class="left large blue pencil alternate icon"></i>Edit</a>
-        <a class="item menu-copy"><i class="left large clone outline icon"></i>Copy</a>
-        <a class="item menu-trigger"><i class="left large green play icon"></i>Trigger</a>
-        <a class="item menu-delete"><i class="left large red trash alternate outline icon"></i>Delete</a>
+        <a class="item menu-edit"><i class="left large blue pencil alternate icon"></i>修改</a>
+        <a class="item menu-copy"><i class="left large clone outline icon"></i>复制</a>
+        <a class="item menu-trigger"><i class="left large green play icon"></i>运行</a>
+        <a class="item menu-delete"><i class="left large red trash alternate outline icon"></i>删除</a>
     </div>
 </div>
 
 <div class="ui mini modal" id="delete-dialog">
     <div class="content">
-        <p>Are you sure you want to delete this job?</p>
+        <p>是否要删除此作业？</p>
         <p><b class="confirm-item"></b></p>
     </div>
     <div class="actions">
-        <div class="ui approve red button">Delete</div>
-        <div class="ui cancel button">Cancel</div>
+        <div class="ui approve red button">删除</div>
+        <div class="ui cancel button">取消</div>
     </div>
 </div>
 

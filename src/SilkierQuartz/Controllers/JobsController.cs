@@ -130,7 +130,6 @@ namespace SilkierQuartz.Controllers
         private async Task<IJobDetail> GetJobDetail(JobKey key)
         {
             var job = await Scheduler.GetJobDetail(key);
-
             if (job == null)
                 throw new InvalidOperationException("Job " + key + " not found.");
 
@@ -158,6 +157,7 @@ namespace SilkierQuartz.Controllers
                         .WithDescription(jobModel.Description)
                         .SetJobData(jobDataMap.GetQuartzJobDataMap())
                         .RequestRecovery(jobModel.Recovery)
+                        .StoreDurably()
                         .Build();
                 }
 
@@ -196,11 +196,18 @@ namespace SilkierQuartz.Controllers
         [HttpGet, JsonErrorResponse]
         public async Task<IActionResult> AdditionalData()
         {
+            var list = new List<object>();
+
+            var store = Scheduler.Context.GetExecutionHistoryStore();
+            if (store == null)
+            {
+                return View(list);
+            }
+
             var keys = await Scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup());
-            var history = await Scheduler.Context.GetExecutionHistoryStore().FilterLastOfEveryJob(10);
+            var history = await store.FilterLastOfEveryJob(10);
             var historyByJob = history.ToLookup(x => x.Job);
 
-            var list = new List<object>();
             foreach (var key in keys)
             {
                 var triggers = await Scheduler.GetTriggersOfJob(key);

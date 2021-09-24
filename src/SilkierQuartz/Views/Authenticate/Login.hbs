@@ -5,7 +5,7 @@
 <form class="ui form" method="post" enctype="multipart/form-data">
     <div class="ui clearing basic segment" style="padding: 0px" id="header">
         <h1 class="ui left floated header">
-            Login
+            授权登录
         </h1>
     </div>
     {{#with Model}}
@@ -13,18 +13,18 @@
         <div>
             <div class="field accept-error">
                 <label>Name</label>
-                <input type="text" placeholder="User Name" value="{{UserName}}" name="userName" />
+                <input type="text" placeholder="用户名" value="{{UserName}}" name="userName" />
             </div>
             <div class="field accept-error">
                 <label>Password</label>
-                <input type="password" placeholder="Password" value="{{Password}}" name="password" />
+                <input type="password" placeholder="密码" value="{{Password}}" name="password" />
             </div>
 
             <div class="field accept-error">
                 <div class="ui checkbox">                    
                     <input type="checkbox" value="true" {{#if IsPersist}} checked {{/if}} name="isPersist" id="isPersist" />
                     <input name="isPersist" type="hidden" value="false">
-                    <label for="isPersist">Remember Me</label>
+                    <label for="isPersist">记住我</label>
                 </div>
             </div>
         </div>
@@ -36,7 +36,7 @@
     </div>
     {{#if IsLoginError}}
     <div class="ui negative message">
-        <p>User Name or Password is incorrect!</p>
+        <p>用户名或密码不正确!</p>
     </div>
     {{/if}}
     {{/with}}

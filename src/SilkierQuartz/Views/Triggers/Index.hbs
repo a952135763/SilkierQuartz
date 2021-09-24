@@ -3,16 +3,16 @@
 
 <div class="ui inverted page dimmer" id="dimmer"><div class="ui loader"></div></div>
 <div class="ui small left icon input">
-    <input type="text" placeholder="Search Trigger..." id="search-trigger">
+    <input type="text" placeholder="搜索执行计划" id="search-trigger">
     <i class="search icon"></i>
 </div>
 <span>&nbsp;</span>
 <div class="ui small floating dropdown labeled search icon button" id="trigger-group-filter">
     <i class="filter icon"></i>
-    <span class="text">Trigger Group</span>
+    <span class="text">计划分组</span>
     <div class="menu">
         <div class="header">
-            Filter by group
+            分组筛选
         </div>
         <div class="divider"></div>
         <div class="item" data-show-all="true"><i>All</i></div>
@@ -30,14 +30,14 @@
 <table class="ui single line table highlight-rows" id="trigger-list">
     <thead>
         <tr>
-            <th>Name</th>
-            <th>Group</th>
-            <th>Schedule</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Last Fire Time</th>
-            <th>Next Fire Time</th>
-            <th>History</th>
+            <th>名称</th>
+            <th>分组</th>
+            <th>调度方式</th>
+            <th>开始时间</th>
+            <th>结束时间</th>
+            <th>上次时间</th>
+            <th>下次时间</th>
+            <th>日志</th>
         </tr>
     </thead>
     <tbody>
@@ -49,8 +49,8 @@
             </td>
             <td class="job-group">{{JobGroup}}</td>
             <td colspan="6" style="text-align: right">
-                <a href="{{ActionUrl 'PauseJob' @ControllerName}}" class="ui super tiny button btn-pause-all"><i class="pause icon"></i>Pause All</a>
-                <a href="{{ActionUrl 'ResumeJob' @ControllerName}}" class="ui super tiny button btn-resume-all"><i class="play icon"></i>Resume All</a>
+                <a href="{{ActionUrl 'PauseJob' @ControllerName}}" class="ui super tiny button btn-pause-all"><i class="pause icon"></i>暂停所有</a>
+                <a href="{{ActionUrl 'ResumeJob' @ControllerName}}" class="ui super tiny button btn-resume-all"><i class="play icon"></i>恢复所有</a>
             </td>
         </tr>
         {{/if}}
@@ -80,22 +80,22 @@
 
 <div style="display:none">
     <div class="ui small vertical menu borderless" id="trigger-context-menu">
-        <a class="item menu-edit"><i class="left large blue pencil alternate icon"></i>Edit</a>
-        <a class="item menu-copy"><i class="left large clone outline icon"></i>Copy</a>
-        <a class="item menu-pause"><i class="left large pause icon" style="color:#e6b800"></i>Pause</a>
-        <a class="item menu-resume"><i class="left large play green icon"></i>Resume</a>
-        <a class="item menu-delete"><i class="left large red trash alternate outline icon"></i>Delete</a>
+        <a class="item menu-edit"><i class="left large blue pencil alternate icon"></i>修改</a>
+        <a class="item menu-copy"><i class="left large clone outline icon"></i>复制</a>
+        <a class="item menu-pause"><i class="left large pause icon" style="color:#e6b800"></i>暂停</a>
+        <a class="item menu-resume"><i class="left large play green icon"></i>恢复</a>
+        <a class="item menu-delete"><i class="left large red trash alternate outline icon"></i>删除</a>
     </div>
 </div>
 
 <div class="ui mini modal" id="delete-dialog">
     <div class="content">
-        <p>Are you sure you want to delete this trigger?</p>
+        <p>是否删除此执行器?</p>
         <p><b class="confirm-item"></b></p>
     </div>
     <div class="actions">
-        <div class="ui approve red button">Delete</div>
-        <div class="ui cancel button">Cancel</div>
+        <div class="ui approve red button">删除</div>
+        <div class="ui cancel button">取消</div>
     </div>
 </div>
 

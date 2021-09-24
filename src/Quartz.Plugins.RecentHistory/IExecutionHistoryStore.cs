@@ -20,6 +20,7 @@ namespace Quartz.Plugins.RecentHistory
         public string ExceptionMessage { get; set; }
     }
 
+    //todo::实现接口 以便把运行日志写入数据库
     public interface IExecutionHistoryStore
     {
         string SchedulerName { get; set; }

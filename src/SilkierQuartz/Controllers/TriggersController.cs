@@ -279,11 +279,16 @@ namespace SilkierQuartz.Controllers
         [HttpGet, JsonErrorResponse]
         public async Task<IActionResult> AdditionalData()
         {
+            var list = new List<object>();
+            var st = Scheduler.Context.GetExecutionHistoryStore();
+            if (st == null)
+            {
+                return View(list);
+            }
             var keys = await Scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.AnyGroup());
-            var history = await Scheduler.Context.GetExecutionHistoryStore().FilterLastOfEveryTrigger(10);
+            var history = await st.FilterLastOfEveryTrigger(10);
             var historyByTrigger = history.ToLookup(x => x.Trigger);
 
-            var list = new List<object>();
             foreach (var key in keys)
             {
                 list.Add(new

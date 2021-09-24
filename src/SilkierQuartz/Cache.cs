@@ -24,6 +24,8 @@ namespace SilkierQuartz
                     {
                         if (_jobTypes == null)
                         {
+
+
                             var keys = _services.Scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup()).GetAwaiter().GetResult();
                             var knownTypes = new List<string>();
                             foreach (var key in keys)

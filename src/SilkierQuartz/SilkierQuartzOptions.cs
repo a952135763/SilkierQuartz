@@ -3,6 +3,8 @@ using Quartz;
 using SilkierQuartz.TypeHandlers;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Number = SilkierQuartz.TypeHandlers.NumberHandler.UnderlyingType;
 
 namespace SilkierQuartz
@@ -19,9 +21,11 @@ namespace SilkierQuartz
         public string ProductName { get; set; } = "";
 
         public string VirtualPathRoot { get; set; } = "/";
+
         public string VirtualPathRootUrlEncode => VirtualPathRoot.Replace("/", "%2F");
 
         public IScheduler Scheduler { get; set; }
+
 
         /// <summary>
         /// Supported value types in job data map.
