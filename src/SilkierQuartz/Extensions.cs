@@ -468,7 +468,7 @@ namespace SilkierQuartz
                     detailsHtml = $"Job: <b>{entry.Job}</b><br>Trigger: <b>{entry.Trigger}</b><br>";
 
                 hst.AddBar(duration?.TotalSeconds ?? 1,
-                    $"{detailsHtml}Fired: <b>{entry.ActualFireTimeUtc.ToDefaultFormat()} UTC</b>{durationHtml}{delayHtml}" +
+                    $"{detailsHtml}Fired: <b>{entry.ActualFireTimeUtc?.ToDefaultFormat()} UTC</b>{durationHtml}{delayHtml}" +
                     $"<br>State: <b>{state}</b>{errorHtml}",
                     cssClass);
             }

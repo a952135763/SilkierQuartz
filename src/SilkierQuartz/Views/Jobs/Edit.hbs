@@ -9,22 +9,22 @@
 <form class="ui form" id="form" method="post" enctype="multipart/form-data">
     <div class="ui clearing basic segment" style="padding: 0px" id="header">
         <div style="float: right">
-            <a class="ui button" id="btn-discard" href="{{ActionUrl ''}}">Discard Changes</a>
+            <a class="ui button" id="btn-discard" href="{{ActionUrl ''}}">放弃修改</a>
             {{#unless Model.Job.IsNew}}
-            <div class="negative ui button" id="btn-delete">Delete</div>
+            <div class="negative ui button" id="btn-delete">删除</div>
             {{/unless}}
             <div class="ui buttons">
-                <div class="ui primary button" id="btn-save">Save</div>
+                <div class="ui primary button" id="btn-save">保存</div>
                 <div class="ui floating dropdown icon primary button" id="save-dropdown">
                     <i class="dropdown icon"></i>
                     <div class="menu">
-                        <div class="item ui basic button" id="btn-trigger"><i class="green play icon"></i> Save &amp; Trigger Immediately</div>
+                        <div class="item ui basic button" id="btn-trigger"><i class="green play icon"></i> 保存 &amp; 立即执行</div>
                     </div>
                 </div>
             </div>
         </div>
         <h1 class="ui left floated header">
-            {{#if Model.Job.IsNew}}Add Job{{else}}Edit Job "{{Model.Job.JobName}}"{{/if}}
+            {{#if Model.Job.IsNew}}添加工作{{else}}修改工作 "{{Model.Job.JobName}}"{{/if}}
         </h1>
     </div>
 
@@ -39,11 +39,11 @@
 
             <div class="two fields">
                 <div class="field accept-error">
-                    <label>Name</label>
+                    <label>工作名称</label>
                     <input type="text" name="job[jobName]" placeholder="Name" value="{{JobName}}" id="jobName" />
                 </div>
                 <div class="field accept-error">
-                    <label>Group</label>
+                    <label>工作分组</label>
                     <input type="hidden" value="{{Group}}" id="jobGroup" />
                     <select class="ui search selection dropdown allow-additions" name="job[group]">
                         <option value="">Group</option>
@@ -53,7 +53,7 @@
             </div>
 
             <div class="field accept-error">
-                <label>Class</label>
+                <label>工作运行Class</label>
                 <input type="hidden" value="{{Type}}" id="jobType" />
                 <select class="ui search selection dropdown allow-additions" name="job[type]" id="jobTypeDropdown">
                     <option value="">Fully Qualified Type Name</option>
@@ -62,19 +62,19 @@
             </div>
 
             <div class="field accept-error">
-                <label>Description</label>
+                <label>工作备注</label>
                 <textarea rows="2" name="job[description]">{{Description}}</textarea>
             </div>
 
             <div class="field accept-error">
                 <div class="ui checkbox">
                     <input name="job[recovery]" type="checkbox" value="True" {{Checked Recovery}} />
-                    <label>Requests Recovery</label>
+                    <label>自动恢复</label>
                 </div>
             </div>
         </div>
         {{/with}}
-        <h3 class="ui dividing header">Job Data Map</h3>
+        <h3 class="ui dividing header">工作参数信息</h3>
 
         {{>JobDataMap Model.DataMap}}
     </div>
@@ -82,12 +82,12 @@
 
 <div class="ui mini modal" id="delete-dialog">
     <div class="content">
-        <p>Are you sure you want to delete this job?</p>
+        <p>是否要删除此工作?</p>
         <p><b class="confirm-item"></b></p>
     </div>
     <div class="actions">
-        <div class="ui approve red button">Delete</div>
-        <div class="ui cancel button">Cancel</div>
+        <div class="ui approve red button">删除</div>
+        <div class="ui cancel button">取消</div>
     </div>
 </div>
 

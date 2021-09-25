@@ -95,6 +95,7 @@ namespace Jobs
                 await outServer.WriteAsync(new PipeMessage() { Id = 3 });
                 await endCh.Writer.WriteAsync(new JobInfo() { warning = "任务被取消" });
                 process?.Kill();
+                Console.WriteLine("任务被远程取消");
             });
 
             var source = CancellationTokenSource.CreateLinkedTokenSource(token);

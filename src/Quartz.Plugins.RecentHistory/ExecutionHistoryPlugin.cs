@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Quartz.Plugins.RecentHistory
 {
@@ -14,6 +15,8 @@ namespace Quartz.Plugins.RecentHistory
 
         public string Name { get; set; }
         public Type StoreType { get; set; }
+        public string ConnectionString { get; set; }
+        public string ConnectionType { get; set; }
 
         public Task Initialize(string pluginName, IScheduler scheduler, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -35,11 +38,11 @@ namespace Quartz.Plugins.RecentHistory
 
                 if (_store == null)
                     throw new Exception(nameof(StoreType) + " is not set.");
-
                 _scheduler.Context.SetExecutionHistoryStore(_store);
             }
 
             _store.SchedulerName = _scheduler.SchedulerName;
+            _store.Init(ConnectionType, ConnectionString);
 
             return _store.Purge();
         }
@@ -62,7 +65,9 @@ namespace Quartz.Plugins.RecentHistory
                 ScheduledFireTimeUtc = context.ScheduledFireTimeUtc?.UtcDateTime,
                 Recovering = context.Recovering,
                 Job = context.JobDetail.Key.ToString(),
-                Trigger = context.Trigger.Key.ToString()
+                Trigger = context.Trigger.Key.ToString(),
+                JobStartData = JsonConvert.SerializeObject(context.MergedJobDataMap)
+
             };
             return _store.Save(entry);
         }
@@ -137,6 +142,7 @@ namespace Quartz.Plugins.RecentHistory
             
             if (entry != null)
             {
+                entry.JobEndData = JsonConvert.SerializeObject(context.MergedJobDataMap);
                 entry.Cancelled = context.CancellationToken.IsCancellationRequested;
                 entry.FinishedTimeUtc = DateTime.UtcNow;
                 entry.ExceptionMessage = jobException?.GetBaseException()?.Message;

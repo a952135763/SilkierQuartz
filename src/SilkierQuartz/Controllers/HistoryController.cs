@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace SilkierQuartz.Controllers
 {
@@ -27,28 +28,28 @@ namespace SilkierQuartz.Controllers
 
             foreach (var h in history.OrderByDescending(x => x.ActualFireTimeUtc))
             {
-                string state = "Finished", icon = "check";
+                string state = "完成", icon = "check";
                 var endTime = h.FinishedTimeUtc;
           
                 if (h.Vetoed)
                 {
-                    state = "Vetoed";
+                    state = "否决";
                     icon = "ban";
                 }
                 else if (!string.IsNullOrEmpty(h.ExceptionMessage))
                 {
-                    state = "Failed";
+                    state = "错误";
                     icon = "close";
                 }
                 else if (h.FinishedTimeUtc == null)
                 {
-                    state = "Running";
+                    state = "运行中";
                     icon = "play";
                     endTime = DateTime.UtcNow;
                 }
                 else if(h.Cancelled)
                 {
-                    state = "Cancelled";
+                    state = "取消";
                     icon = "exchange";
                 }
 
@@ -65,7 +66,7 @@ namespace SilkierQuartz.Controllers
                     TriggerName = h.Trigger.Substring(triggerKey[0].Length + 1),
 
                     ScheduledFireTimeUtc = h.ScheduledFireTimeUtc?.ToDefaultFormat(),
-                    ActualFireTimeUtc = h.ActualFireTimeUtc.ToDefaultFormat(),
+                    ActualFireTimeUtc = h.ActualFireTimeUtc?.ToDefaultFormat(),
                     FinishedTimeUtc = h.FinishedTimeUtc?.ToDefaultFormat(),
                     Duration = (endTime - h.ActualFireTimeUtc)?.ToString("hh\\:mm\\:ss"),
                     State = state,
@@ -74,6 +75,22 @@ namespace SilkierQuartz.Controllers
             }
 
             return View(list);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Show(int Id)
+        {
+            var store = Scheduler.Context.GetExecutionHistoryStore();
+            ViewBag.Activation = false;
+
+            if (Id > 0)
+            {
+               var data = await store.Get(Id);
+               if(data !=null) ViewBag.Activation = true;
+               
+               return View(JsonConvert.SerializeObject(data));
+            }
+            return View(null);
         }
     }
 }

@@ -74,4 +74,8 @@
 		<EmbeddedResource Include="TypeHandlers\*.hbs" />
 		<EmbeddedResource Include="TypeHandlers\*.js" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Views\History\Show.hbs" />
+	</ItemGroup>
 </Project>

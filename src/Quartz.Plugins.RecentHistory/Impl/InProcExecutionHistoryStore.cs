@@ -9,6 +9,7 @@ namespace Quartz.Plugins.RecentHistory.Impl
     [Serializable]
     public class InProcExecutionHistoryStore : IExecutionHistoryStore
     {
+        public string Extra { get; set; }
         public string SchedulerName { get; set; }
 
         Dictionary<string, ExecutionHistoryEntry> _data = new Dictionary<string, ExecutionHistoryEntry>();
@@ -17,6 +18,16 @@ namespace Quartz.Plugins.RecentHistory.Impl
         int _updatesFromLastPurge;
 
         int _totalJobsExecuted = 0, _totalJobsFailed = 0;
+
+        public Task Init(string ConnectionType, string ConnectionString)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task<ExecutionHistoryEntry> Get(int id)
+        {
+            throw new NotImplementedException();
+        }
 
         public Task<ExecutionHistoryEntry> Get(string fireInstanceId)
         {
@@ -67,8 +78,12 @@ namespace Quartz.Plugins.RecentHistory.Impl
                 IEnumerable<ExecutionHistoryEntry> result = _data.Values
                     .Where(x => x.SchedulerName == SchedulerName)
                     .GroupBy(x => x.Job)
-                    .Select(x => x.OrderByDescending(y => y.ActualFireTimeUtc).Take(limitPerJob).Reverse())
-                    .SelectMany(x => x).ToArray();
+                    .Select(x => x
+                        .OrderByDescending(y => y.ActualFireTimeUtc)
+                        .Take(limitPerJob)
+                        .Reverse())
+                    .SelectMany(x => x)
+                    .ToArray();
                 return Task.FromResult(result);
             }
         }
@@ -95,6 +110,11 @@ namespace Quartz.Plugins.RecentHistory.Impl
                     .OrderByDescending(y => y.ActualFireTimeUtc).Take(limit).Reverse().ToArray();
                 return Task.FromResult(result);
             }
+        }
+
+        public Task<KeyValuePair<int, IEnumerable<ExecutionHistoryEntry>>> FilterAll(int pageIndex, int pageSize)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<int> GetTotalJobsExecuted()

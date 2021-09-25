@@ -42,10 +42,10 @@ namespace SilkierQuartz.Example
             authenticationOptions =>
             {
                 authenticationOptions.AuthScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                authenticationOptions.SilkierQuartzClaim = "Silkier";
-                authenticationOptions.SilkierQuartzClaimValue = "Quartz";
+                authenticationOptions.SilkierQuartzClaim = Dns.GetHostName();
+                authenticationOptions.SilkierQuartzClaimValue = DateTime.Now.ToString();
                 authenticationOptions.UserName = "admin";
-                authenticationOptions.UserPassword = "password";
+                authenticationOptions.UserPassword = "123456";
                 authenticationOptions.AccessRequirement = SilkierQuartzAuthenticationOptions.SimpleAccessRequirement.AllowOnlyUsersWithClaim;
             }
 #else 
@@ -75,18 +75,21 @@ namespace SilkierQuartz.Example
                 properties["quartz.jobStore.useProperties"] = "true";
 
                 //群集信息
-                properties["quartz.scheduler.instanceName"] = "GameGo";
-                properties["quartz.scheduler.instanceId"] = "AUTO";
+                properties["quartz.scheduler.instanceName"] = "GameJobs";
+                //节点名称,必须在群集中唯一
+                properties["quartz.scheduler.instanceId"] = $"AUTO";
                 properties["quartz.jobStore.clustered"] = "true";
-                properties["quartz.jobStore.clusterCheckinInterval"] = "1000";
+                properties["quartz.jobStore.clusterCheckinInterval"] = "2000";
 
 
-                //最大线程数量
-                properties["quartz.threadPool.maxConcurrency"] = "1";
+                //最大运行线程数量
+                properties["quartz.threadPool.maxConcurrency"] = "20";
 
-                //任务监控插件
+                //作业监控日志插件,监控数据
                 properties["quartz.plugin.recentHistory.type"] = "Quartz.Plugins.RecentHistory.ExecutionHistoryPlugin,Quartz.Plugins.RecentHistory";
-                properties["quartz.plugin.recentHistory.storeType"] = "Quartz.Plugins.RecentHistory.Impl.InProcExecutionHistoryStore, Quartz.Plugins.RecentHistory";
+                properties["quartz.plugin.recentHistory.storeType"] = "Quartz.Plugins.RecentHistory.LastingExecutionHistoryStore,Quartz.Plugins.RecentHistory";
+                properties["quartz.plugin.recentHistory.connectionType"] = "Mysql";
+                properties["quartz.plugin.recentHistory.connectionString"] = "Server=localhost;Database=qze;Uid=root;Pwd=H9MvYSqY3JmAC4aj;SslMode=None";
             } 
             );
             services.AddOptions();
