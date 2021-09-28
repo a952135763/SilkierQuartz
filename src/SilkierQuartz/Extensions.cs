@@ -178,23 +178,17 @@ namespace SilkierQuartz
         public static List<JobDataMapItem> GetJobDataMapModel(this IJobDetail job, Services services) => GetJobDataMapModelCore(job, services);
         public static List<JobDataMapItem> GetJobDataMapModel(this ITrigger trigger, Services services) => GetJobDataMapModelCore(trigger, services);
 
-        private static List<JobDataMapItem> GetJobDataMapModelCore(object jobOrTrigger, Services services)
+        public static List<JobDataMapItem> ToJobDataMapItems(this JobDataMap jobDataMap, Services services)
         {
             List<JobDataMapItem> list = new List<JobDataMapItem>();
 
             // TODO: doplnit parametre z template na zaklade jobKey; value najprv skonvertovat na ocakavany typ zo sablony
-
-            JobDataMap jobDataMap = null;
-
+            if (jobDataMap is null)
             {
-                if (jobOrTrigger is IJobDetail j)
-                    jobDataMap = j.JobDataMap;
-                if (jobOrTrigger is ITrigger t)
-                    jobDataMap = t.JobDataMap;
+                return list;
+
             }
 
-            if (jobDataMap == null)
-                throw new ArgumentException("Invalid type.", nameof(jobOrTrigger));
 
             foreach (var pair in jobDataMap)
             {
@@ -255,6 +249,26 @@ namespace SilkierQuartz
             }
 
             return list;
+        }
+
+        private static List<JobDataMapItem> GetJobDataMapModelCore(object jobOrTrigger, Services services)
+        {
+            List<JobDataMapItem> list = new List<JobDataMapItem>();
+
+            // TODO: doplnit parametre z template na zaklade jobKey; value najprv skonvertovat na ocakavany typ zo sablony
+
+            JobDataMap jobDataMap = null;
+            {
+                if (jobOrTrigger is IJobDetail j)
+                    jobDataMap = j.JobDataMap;
+                if (jobOrTrigger is ITrigger t)
+                    jobDataMap = t.JobDataMap;
+            }
+
+            if (jobDataMap == null)
+                throw new ArgumentException("Invalid type.", nameof(jobOrTrigger));
+
+            return jobDataMap.ToJobDataMapItems(services);
         }
 
         public static Task UpdateJob(this IScheduler scheduler, JobKey jobKey, IJobDetail newJob)

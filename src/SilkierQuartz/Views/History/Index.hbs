@@ -4,18 +4,13 @@
 {{#if ViewBag.HistoryEnabled}}
 
 
-<div class="ui message">
-    <i class="info circle icon"></i>
-    todo::扩展详细运行日志!
-</div>
-
 
 <table class="ui single line table highlight-rows" id="history-list">
     <thead>
         <tr>
-            <th>运行结果</th>
+            <th>状态</th>
+            <th>实例ID</th>
             <th>工作信息</th>
-            <th>执行信息</th>
             <th>调度时间</th>
             <th>开始时间</th>
             <th>完成时间</th>
@@ -26,26 +21,23 @@
         {{#each Model}}
         <tr>
             <td>
+                <i class="{{StateIcon}} icon" title="{{State}}"></i>
+
+            </td>
+            <td>
                 <a href="{{ActionUrl 'Show' 'History' id=Entity.Id}}">
-                    <i class="{{StateIcon}} icon" title="{{State}}"></i>
+                    {{FireInstanceId}}
                 </a>
             </td>
-            <td class="job-key">
+
+            <td>
                 <a href="{{ActionUrl 'Edit' 'Jobs' group=JobGroup name=JobName}}">{{JobGroup}}.{{JobName}}</a>
             </td>
-            <td class="trigger-name"><a href="{{ActionUrl 'Edit' 'Triggers' group=TriggerGroup name=TriggerName}}">{{TriggerGroup}}.{{TriggerName}}</a></td>
             <td>{{ScheduledFireTimeUtc}}</td>
             <td>{{ActualFireTimeUtc}}</td>
             <td>{{FinishedTimeUtc}}</td>
             <td>{{Duration}}</td>
         </tr>
-        {{#if Entity.ExceptionMessage}}
-        <tr class="error-row">
-            <td colspan="6">
-                <p>{{Entity.ExceptionMessage}}</p>
-            </td>
-        </tr>
-        {{/if}}
         {{/each}}
     </tbody>
 </table>
@@ -55,7 +47,7 @@
 {{/unless}}
 {{else}}
 <div class="ui negative message">
-    <div class="header" style="margin-bottom: 0.5em">Job history is not available.</div>
-    Enable ExecutionHistoryPlugin in Quartz configuration section.
+    <div class="header" style="margin-bottom: 0.5em">扩展插件未启用.</div>
+    请启用插件"ExecutionHistoryPlugin"。
 </div>
 {{/if}}

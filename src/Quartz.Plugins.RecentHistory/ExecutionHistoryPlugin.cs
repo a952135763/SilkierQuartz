@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using SqlSugar;
 
 namespace Quartz.Plugins.RecentHistory
 {
@@ -55,7 +56,6 @@ namespace Quartz.Plugins.RecentHistory
         public Task JobToBeExecuted(IJobExecutionContext context, CancellationToken cancellationToken = default(CancellationToken))
         {
             //任务执行前
-
             var entry = new ExecutionHistoryEntry()
             {
                 FireInstanceId = context.FireInstanceId,
@@ -66,9 +66,23 @@ namespace Quartz.Plugins.RecentHistory
                 Recovering = context.Recovering,
                 Job = context.JobDetail.Key.ToString(),
                 Trigger = context.Trigger.Key.ToString(),
-                JobStartData = JsonConvert.SerializeObject(context.MergedJobDataMap)
+                JobStartData = context.MergedJobDataMap
 
             };
+            if (context.Recovering)
+            {
+                var lastEntry = _store.Queryable
+                     .Where(p => p.Trigger == context.RecoveringTriggerKey.ToString())
+                     .OrderBy(p=>p.ScheduledFireTimeUtc,OrderByType.Desc)
+                     .First();
+                if (lastEntry != null)
+                {
+                    lastEntry.FinishedTimeUtc= DateTime.UtcNow;
+                    lastEntry.ExceptionMessage = "任务执行时调度实例被非法关闭";
+                    _store.Save(lastEntry);
+                }
+            }
+
             return _store.Save(entry);
         }
 
@@ -79,38 +93,38 @@ namespace Quartz.Plugins.RecentHistory
         /// <returns></returns>
         private async Task NextJob(IJobExecutionContext context)
         {
-            //执行完成前!
-            //获取当前组任务key
-            var keys = await context.Scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(context.JobDetail.Key.Group));
-            //获取任务详情
-            var nextJon = keys.Where(p => !Equals(p, context.JobDetail.Key))
-                .Select(p => context.Scheduler.GetJobDetail(p).Result)
-                .ToArray();
-            foreach (IJobDetail detail in nextJon)
+            if (context.Result is IExecutionHistoryResult rest)
             {
-                var data = detail.JobDataMap;
-                var targetJobs = data.GetString("TargetJobs");
-                if (!string.IsNullOrEmpty(targetJobs))
+                //执行完成前!
+                //获取当前组任务key
+                var keys = await context.Scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(context.JobDetail.Key.Group));
+                //获取任务详情
+                var nextJon = keys.Where(p => !Equals(p, context.JobDetail.Key))
+                    .Select(p => context.Scheduler.GetJobDetail(p).Result)
+                    .ToArray();
+                foreach (IJobDetail detail in nextJon)
                 {
-                    var targetSplit = targetJobs.Split("\r\n");
-
-                    var targetDen = targetSplit.FirstOrDefault(p => p.Equals(context.JobDetail.Key.Name));
-                    if (!string.IsNullOrEmpty(targetDen))
+                    var data = detail.JobDataMap;
+                    string targetJobs = data.GetString("_TargetJobs");
+                    if (!string.IsNullOrEmpty(targetJobs))
                     {
-                        //链式任务执行
-                        context.MergedJobDataMap.TryGetValue("Output", out var outValue);
+                        string[] targetSplit = targetJobs.Split("\r\n");
 
-                        data["Input"] = $"{outValue}";
-                        data.Remove("TargetJobs");
-                        try
+                        string targetDen = targetSplit.FirstOrDefault(p => p.Equals(context.JobDetail.Key.Name));
+                        if (!string.IsNullOrEmpty(targetDen))
                         {
-                            await context.Scheduler.TriggerJob(detail.Key, data);
+                            data["_Input"] = rest.Output;
+                            data.Remove("_TargetJobs");
+                            try
+                            {
+                                await context.Scheduler.TriggerJob(detail.Key, data);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e);
+                                throw;
+                            }
 
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine(e);
-                            throw;
                         }
 
                     }
@@ -118,6 +132,7 @@ namespace Quartz.Plugins.RecentHistory
                 }
 
             }
+
         }
 
         public async Task JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException, CancellationToken cancellationToken = default(CancellationToken))
@@ -129,6 +144,7 @@ namespace Quartz.Plugins.RecentHistory
             {
                 try
                 {
+
                     await NextJob(context);
 
                 }
@@ -142,10 +158,15 @@ namespace Quartz.Plugins.RecentHistory
             
             if (entry != null)
             {
-                entry.JobEndData = JsonConvert.SerializeObject(context.MergedJobDataMap);
                 entry.Cancelled = context.CancellationToken.IsCancellationRequested;
                 entry.FinishedTimeUtc = DateTime.UtcNow;
                 entry.ExceptionMessage = jobException?.GetBaseException()?.Message;
+                if (context.Result is IExecutionHistoryResult rest)
+                {
+                    entry.DetailedLogs = rest.OutLog;
+                    entry.OutputInfo = rest.Output;
+                }
+                entry.JobEndData = context.MergedJobDataMap;
                 await _store.Save(entry);
             }
             if (jobException == null)

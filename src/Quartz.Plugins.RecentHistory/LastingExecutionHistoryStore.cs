@@ -22,6 +22,9 @@ namespace Quartz.Plugins.RecentHistory
 
         private AsyncLock asyncLock = new AsyncLock();
 
+        public ISugarQueryable<ExecutionHistoryEntry> Queryable => sqlClient.Queryable<ExecutionHistoryEntry>()
+            .Where(p=>p.SchedulerName == SchedulerName);
+
         public async Task Init(string ConnectionType, string ConnectionString)
         {
             using var t = await asyncLock.LockAsync();
@@ -45,7 +48,7 @@ namespace Quartz.Plugins.RecentHistory
                 {
                     db.Aop.OnLogExecuting = (sql, pars) =>
                     {
-
+                       Console.WriteLine(sql);
                     };
                 });
                 sqlClient.CodeFirst.SetStringDefaultLength(250).InitTables<ExecutionHistoryEntry>();
@@ -57,18 +60,12 @@ namespace Quartz.Plugins.RecentHistory
                 {
                     await sqlClient.Insertable(new HistoryCountEntry { SchedulerName = SchedulerName, TotalJobsExecuted = 0, TotalJobsFailed = 0 })
                         .ExecuteReturnIdentityAsync();
-
                 }
-
             }
-
-
-
         }
 
         public Task<ExecutionHistoryEntry> Get(string fireInstanceId)
         {
-
             return sqlClient.Queryable<ExecutionHistoryEntry>().Where(p => p.FireInstanceId == fireInstanceId).FirstAsync();
         }
 

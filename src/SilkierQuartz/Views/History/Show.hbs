@@ -1,10 +1,116 @@
 ﻿{{!<Layout}}
-
 {{ViewBag Title='详细日志'}}
-
-
 {{#if ViewBag.Activation}}
 
-{{Model}}
+<div class="ui inverted page dimmer" id="dimmer"><div class="ui loader"></div></div>
 
-{{/if}}
+<div class="ui form">
+    <div class="ui clearing basic segment" style="padding: 0px" id="header">
+        <div style="float: right">
+            <a class="ui button" id="btn-discard" href="{{ActionUrl ''}}">返回</a>
+        </div>
+        <h1 class="ui left floated header">
+            查看任务详情
+        </h1>
+    </div>
+
+
+    <div class="ui segment">
+        <h3 class="ui dividing header">任务执行信息</h3>
+        <table class="ui table">
+            <tbody>
+                <tr>
+                    <td style="min-width:220px">实例Id</td>
+                    <td>{{Model.Entry.FireInstanceId}}</td>
+                </tr>
+                <tr>
+                    <td style="min-width:220px">运行节点</td>
+                    <td>{{Model.Entry.SchedulerInstanceId}}</td>
+                </tr>
+                <tr>
+                    <td style="min-width:220px">运行群集</td>
+                    <td>{{Model.Entry.SchedulerName}}</td>
+                </tr>
+                <tr>
+                    <td style="min-width:220px">运行名称</td>
+                    <td>{{Model.Entry.Job}}</td>
+                </tr>
+                <tr>
+                    <td style="min-width:220px">执行器</td>
+                    <td>{{Model.Entry.Trigger}}</td>
+                </tr>
+                <tr>
+                    <td style="min-width:220px">开始调度时间</td>
+                    <td>{{Model.Entry.ScheduledFireTimeUtc}}</td>
+                </tr>
+                <tr>
+                    <td style="min-width:220px">实际运行时间</td>
+                    <td>{{Model.Entry.ActualFireTimeUtc}}</td>
+                </tr>
+                <tr>
+                    <td style="min-width:220px">是否自动恢复</td>
+                    <td>{{Model.Entry.Recovering}}</td>
+                </tr>
+                <tr>
+                    <td style="min-width:220px">是否运行前取消</td>
+                    <td>{{Model.Entry.Vetoed}}</td>
+                </tr>
+                <tr>
+                    <td style="min-width:220px">是否运行中取消</td>
+                    <td>{{Model.Entry.Cancelled}}</td>
+                </tr>
+                <tr>
+                    <td style="min-width:220px">完成时间</td>
+                    <td>{{Model.Entry.FinishedTimeUtc}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        {{#if Model.Entry.ExceptionMessage}}
+        <h3 class="ui dividing header">错误信息</h3>
+        <div class="field accept-error">
+            <textarea rows="10">{{Model.Entry.ExceptionMessage}}</textarea>
+        </div>
+        {{/if}}
+
+        {{#if Model.Entry.DetailedLogs}}
+        <h3 class="ui dividing header">详细日志</h3>
+        <div class="field accept-error">
+            <textarea rows="10">{{Model.Entry.DetailedLogs}}</textarea>
+        </div>
+        {{/if}}
+
+        {{#if Model.Entry.OutputInfo}}
+        <h3 class="ui dividing header">返回数据</h3>
+        <div class="field accept-error">
+            <textarea rows="10">{{Model.Entry.OutputInfo}}</textarea>
+        </div>
+        {{/if}}
+        <h3 class="ui dividing header">工作开始时参数信息</h3>
+        {{>JobDataMap Model.JobDataStartMap}}
+
+
+        <h3 class="ui dividing header">工作结束时参数信息</h3>
+        {{>JobDataMap Model.JobDataEndMap}}
+
+    </div>
+
+
+</div>
+
+
+
+
+
+
+    <script>
+
+
+
+    </script>
+
+
+
+    {{/if}}
+
+

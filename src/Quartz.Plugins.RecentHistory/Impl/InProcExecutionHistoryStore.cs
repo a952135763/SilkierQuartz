@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SqlSugar;
 
 namespace Quartz.Plugins.RecentHistory.Impl
 {
@@ -18,6 +19,8 @@ namespace Quartz.Plugins.RecentHistory.Impl
         int _updatesFromLastPurge;
 
         int _totalJobsExecuted = 0, _totalJobsFailed = 0;
+
+        public ISugarQueryable<ExecutionHistoryEntry> Queryable { get; }
 
         public Task Init(string ConnectionType, string ConnectionString)
         {

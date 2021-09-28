@@ -8,9 +8,6 @@ using Quartz.Spi;
 
 namespace Quartz.Impl.RedisJobStore
 {
-
-
-
     public class RedisJobStore: IJobStore
     {
         public Task Initialize(ITypeLoadHelper loadHelper, ISchedulerSignaler signaler,

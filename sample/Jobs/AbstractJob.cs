@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Quartz;
+using Quartz.Plugins.RecentHistory;
 
 namespace Jobs
 {
@@ -14,7 +16,20 @@ namespace Jobs
         {
             try
             {
-                await Run(context);
+                JobDataMap data = context.MergedJobDataMap;
+                var runningTime = data.GetIntValue("_RunningTime");
+                if (runningTime > 0)
+                {
+                    var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(context.CancellationToken);
+                    context.Put("token", tokenSource.Token);
+                    tokenSource.CancelAfter(TimeSpan.FromSeconds(runningTime));
+                }
+                else
+                {
+                    context.Put("token", context.CancellationToken);
+                }
+                var res = await Run(context);
+                context.Result = res;
             }
             catch (OperationCanceledException)
             {
@@ -31,7 +46,7 @@ namespace Jobs
             }
         }
 
-        protected abstract Task Run(IJobExecutionContext context);
+        protected abstract Task<IExecutionHistoryResult> Run(IJobExecutionContext context);
     }
 
 

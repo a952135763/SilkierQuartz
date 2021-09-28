@@ -6,7 +6,7 @@ using SqlSugar;
 namespace Quartz.Plugins.RecentHistory
 {
     [Serializable]
-    [SugarTable("Logs_JobsHistory", IsDisabledUpdateAll = true)]
+    [SugarTable("Logs_JobsHistory")]
     public class ExecutionHistoryEntry
     {
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
@@ -36,19 +36,25 @@ namespace Quartz.Plugins.RecentHistory
         [SugarColumn(IsNullable = true)]
         public DateTime? FinishedTimeUtc { get; set; }
 
-        [SugarColumn(IsNullable = true)]
+        [SugarColumn(IsNullable = true, ColumnDataType = "text")]
         public string ExceptionMessage { get; set; }
         public bool Cancelled { get; set; }
 
-        [SugarColumn(ColumnDataType = "text", IsJson = true,IsNullable = true)]
-        public string JobStartData { get; set; }
+        [SugarColumn(ColumnDataType = "text", IsNullable = true)]
+        public string DetailedLogs { get; set; }
+
+        [SugarColumn(ColumnDataType = "text", IsNullable = true)]
+        public string OutputInfo { get; set; }
 
         [SugarColumn(ColumnDataType = "text", IsJson = true,IsNullable = true)]
-        public string JobEndData { get; set; }
+        public JobDataMap JobStartData { get; set; }
+
+        [SugarColumn(ColumnDataType = "text", IsJson = true,IsNullable = true)]
+        public JobDataMap JobEndData { get; set; }
 
     }
 
-    [SugarTable("Logs_JobsCount", IsDisabledUpdateAll = true)]
+    [SugarTable("Logs_JobsCount")]
     public class HistoryCountEntry
     {
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
@@ -62,11 +68,10 @@ namespace Quartz.Plugins.RecentHistory
         public int TotalJobsFailed { get; set; }
     }
 
-    //todo::实现接口 以便把运行日志写入数据库
     public interface IExecutionHistoryStore
     {
         string SchedulerName { get; set; }
-
+        ISugarQueryable<ExecutionHistoryEntry> Queryable { get; }
         Task Init(string ConnectionType,string ConnectionString);
         Task<ExecutionHistoryEntry> Get(int id);
         Task<ExecutionHistoryEntry> Get(string fireInstanceId);
@@ -84,5 +89,31 @@ namespace Quartz.Plugins.RecentHistory
         Task IncrementTotalJobsExecuted();
         Task IncrementTotalJobsFailed();
 
+    }
+
+
+    public interface IExecutionHistoryResult
+    {
+        //运行详细日志
+        string OutLog { get; set; }
+
+        //运行详细结果
+        string Output { get; set; }
+    }
+
+    public class ExecutionHistoryResult: IExecutionHistoryResult
+    {
+        //运行详细日志
+       public string OutLog { get; set; }
+
+        //运行详细结果
+        public string Output { get; set; }
+
+        public ExecutionHistoryResult(){}
+        public ExecutionHistoryResult(string log, string output)
+        {
+            OutLog = log;
+            Output = output;
+        }
     }
 }

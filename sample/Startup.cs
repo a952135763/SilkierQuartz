@@ -43,7 +43,7 @@ namespace SilkierQuartz.Example
             {
                 authenticationOptions.AuthScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 authenticationOptions.SilkierQuartzClaim = Dns.GetHostName();
-                authenticationOptions.SilkierQuartzClaimValue = DateTime.Now.ToString();
+                authenticationOptions.SilkierQuartzClaimValue = "12222";
                 authenticationOptions.UserName = "admin";
                 authenticationOptions.UserPassword = "123456";
                 authenticationOptions.AccessRequirement = SilkierQuartzAuthenticationOptions.SimpleAccessRequirement.AllowOnlyUsersWithClaim;
@@ -77,7 +77,7 @@ namespace SilkierQuartz.Example
                 //群集信息
                 properties["quartz.scheduler.instanceName"] = "GameJobs";
                 //节点名称,必须在群集中唯一
-                properties["quartz.scheduler.instanceId"] = $"AUTO";
+                properties["quartz.scheduler.instanceId"] = $"{Dns.GetHostName()}";
                 properties["quartz.jobStore.clustered"] = "true";
                 properties["quartz.jobStore.clusterCheckinInterval"] = "2000";
 
