@@ -32,7 +32,7 @@ namespace SilkierQuartz.Models
         [Required]
         public string Type { get; set; }
 
-        public IEnumerable<string> TypeList { get; set; }
+        public KeyValuePair<string, string>[] TypeList { get; set; }
 
         public string Description { get; set; }
 

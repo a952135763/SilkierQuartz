@@ -20,7 +20,6 @@ namespace SilkierQuartz.Controllers
         {
             var keys = (await Scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup())).OrderBy(x => x.ToString());
             var list = new List<JobListItem>();
-            var knownTypes = new List<string>();
 
             foreach (var key in keys)
             {
@@ -36,11 +35,9 @@ namespace SilkierQuartz.Controllers
                     History = Histogram.Empty,
                     Description = detail.Description,
                 };
-                knownTypes.Add(detail.JobType.RemoveAssemblyDetails());
                 list.Add(item);
             }
 
-            Services.Cache.UpdateJobTypes(knownTypes);
 
             ViewBag.Groups = (await Scheduler.GetJobGroupNames()).GroupArray();
 

@@ -20,7 +20,6 @@ namespace SilkierQuartz.Example
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
@@ -98,8 +97,12 @@ namespace SilkierQuartz.Example
             services.AddOptions();
             services.Configure<AppSettings>(Configuration);
             services.Configure<InjectProperty>(options => { options.WriteText = "This is inject string"; });
-            services.AddQuartzJob<Jobs.GameJob>();
-            services.AddQuartzJob<Jobs.TestJob>();
+
+
+          
+            //自动注册所有job
+
+
 
         }
 

@@ -96,6 +96,7 @@ namespace Microsoft.AspNetCore.Builder
             types.ForEach(t =>
             {
                 var so = t.GetCustomAttribute<SilkierQuartzAttribute>();
+                if(so.Dormant)return;
                 app.UseQuartzJob(t, () =>
                 {
                     var tb = TriggerBuilder.Create();

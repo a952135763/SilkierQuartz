@@ -10,14 +10,12 @@ namespace Jobs
 {
     public abstract class AbstractJob : IJob
     {
-
-
         public async Task Execute(IJobExecutionContext context)
         {
             try
             {
                 JobDataMap data = context.MergedJobDataMap;
-                var runningTime = data.GetIntValue("_RunningTime");
+                var runningTime = data.GetIntValue("_最大运行时间");
                 if (runningTime > 0)
                 {
                     var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(context.CancellationToken);
@@ -30,6 +28,7 @@ namespace Jobs
                 }
                 var res = await Run(context);
                 context.Result = res;
+                Console.WriteLine("任务结束");
             }
             catch (OperationCanceledException)
             {
@@ -48,6 +47,8 @@ namespace Jobs
 
         protected abstract Task<IExecutionHistoryResult> Run(IJobExecutionContext context);
     }
+
+
 
 
 

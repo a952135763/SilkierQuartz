@@ -107,7 +107,7 @@ namespace Quartz.Plugins.RecentHistory
                 foreach (IJobDetail detail in nextJon)
                 {
                     var data = detail.JobDataMap;
-                    string targetJobs = data.GetString("_TargetJobs");
+                    string targetJobs = data.GetString("_监听启动");
                     if (!string.IsNullOrEmpty(targetJobs))
                     {
                         string[] targetSplit = targetJobs.Split("\r\n");
@@ -115,8 +115,8 @@ namespace Quartz.Plugins.RecentHistory
                         string targetDen = targetSplit.FirstOrDefault(p => p.Equals(context.JobDetail.Key.Name));
                         if (!string.IsNullOrEmpty(targetDen))
                         {
-                            data["_Input"] = rest.Output;
-                            data.Remove("_TargetJobs");
+                            data["_输入信息"] = rest.Output;
+                            data.Remove("_监听启动");
                             try
                             {
                                 await context.Scheduler.TriggerJob(detail.Key, data);

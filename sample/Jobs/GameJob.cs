@@ -11,6 +11,7 @@ using H.Pipes;
 using H.Pipes.Args;
 using MessageStructure;
 using Quartz.Plugins.RecentHistory;
+using SilkierQuartz;
 using SilkierQuartz.Example.GameProgram;
 
 namespace Jobs
@@ -19,6 +20,7 @@ namespace Jobs
     /// <summary>
     /// IJobExecutionContext.Result  禁止使用!
     /// </summary>
+    [SilkierQuartz(Identity = "运行脚本", Desciption = "按照参数运算脚本")]
     public class GameJob : AbstractJob
     {
 
@@ -31,13 +33,13 @@ namespace Jobs
             var a = context.JobDetail.Durable;//即时运行,还是计划运行
             var s = context.JobDetail.RequestsRecovery; //是不是重试
             Console.WriteLine($"执行任务:{jobKey.Group}.{jobKey.Name}");
-            var gameUrl = data.GetString("_GameUrl");
+            var gameUrl = data.GetString("_运行地址");
             var pipName = $"./{context.FireInstanceId}/{jobKey}";
 
             if (string.IsNullOrEmpty(gameUrl))
             {
-                Console.WriteLine($"执行失败...必须需要参数_GameName");
-                throw new JobExecutionException($"必须需要参数_GameName");
+                Console.WriteLine($"执行失败...必须需要参数 _运行地址");
+                throw new JobExecutionException($"必须需要参数 _运行地址");
             }
             //自动todo::获取文件下发
             var get = new AutoGet($"{Environment.CurrentDirectory}/GameTmp");
@@ -62,7 +64,7 @@ namespace Jobs
             StringBuilder outStr = new StringBuilder();
             StringBuilder outLogStr = new StringBuilder();
 
-            var targetCount = data.GetIntValue("_OutputCount");
+            var targetCount = data.GetIntValue("_完成数量");
 
             //启动进程通讯,out
             await using var outServer = new PipeServer<PipeMessage>(pipName);
@@ -73,7 +75,7 @@ namespace Jobs
                 await args.Connection.WriteAsync(new PipeMessage()
                 {
                     Id = 0,
-                    Configure = data.GetString("_Configure"),
+                    Configure = data.GetString("_运行配置"),
                 });
                 await args.Connection.WriteAsync(new PipeMessage()
                 {
@@ -175,7 +177,7 @@ namespace Jobs
                         //返回配置初步验证情况,ok继续下发输入信息
                         if (args.Message.Output.Equals("ok"))
                         {
-                            await args.Connection.WriteAsync(new PipeMessage() { Id = 1, Input = data.GetString("_Input") });
+                            await args.Connection.WriteAsync(new PipeMessage() { Id = 1, Input = data.GetString("_输入信息") });
                             return;
                         }
                         await endCh.Writer.WriteAsync(new JobInfo() { error = $"脚本配置失败-{args.Message.Output}" });

@@ -48,7 +48,7 @@ namespace Quartz.Plugins.RecentHistory
                 {
                     db.Aop.OnLogExecuting = (sql, pars) =>
                     {
-                       Console.WriteLine(sql);
+                       //Console.WriteLine(sql);
                     };
                 });
                 sqlClient.CodeFirst.SetStringDefaultLength(250).InitTables<ExecutionHistoryEntry>();

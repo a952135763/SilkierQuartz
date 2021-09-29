@@ -9,6 +9,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using HtmlAgilityPack;
+using RestSharp;
 
 namespace SilkierQuartz.Example.GameProgram
 {
@@ -24,14 +26,49 @@ namespace SilkierQuartz.Example.GameProgram
         public bool RunUrl(string url,string[] args,out Process process)
         {
             var applicationUri = new Uri(url);
-
+            var str = applicationUri.Segments[^1];
+            if (!str.EndsWith(".application"))
+            {
+                //不是application
+                string htmlUri = url;
+                if (!str.EndsWith(".htm"))
+                {
+                    //不是htm
+                    htmlUri = url.EndsWith("/") ? $"{url}publish.htm" : $"{url}/publish.htm";
+                }
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(Get(htmlUri));
+                var node =doc.DocumentNode.SelectSingleNode("//*[@class=\"JustThisApp\"]/a");
+                if (node == null)
+                {
+                    process = null;
+                    return false;
+                }
+                string application = node.Attributes["href"].Value;
+                applicationUri = new Uri(new Uri(htmlUri), application);
+            }
             process = RunWithTempFolder(applicationUri, args);
 
             return true;
         }
 
 
-         
+        public string Get(string url)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(url)) return String.Empty;
+                var client = new RestClient(url);
+                var request = new RestRequest(Method.GET);
+                var res = client.Execute(request);
+                return res.Content;
+            }
+            catch (Exception)
+            {
+                return String.Empty;
+            }
+
+        }
         Process RunWithTempFolder(Uri url, string[] args)
         {
             var localPath = CreateTempFolder(url.ToString());
@@ -55,24 +92,23 @@ namespace SilkierQuartz.Example.GameProgram
 
          DirectoryInfo CreateTempFolder(string url)
         {
-            string path = $"{RootPath}/{GenerateMD5(url)}";
+            string path = $"{RootPath}\\{GetMD5(url)}";
             return Directory.CreateDirectory(path);
         }
 
-        static string GenerateMD5(string txt)
-        {
-            using MD5 mi = MD5.Create();
-            byte[] buffer = Encoding.Default.GetBytes(txt);
-            //开始加密
-            byte[] newBuffer = mi.ComputeHash(buffer);
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < newBuffer.Length; i++)
-            {
-                sb.Append(i.ToString("x2"));
-            }
-            return sb.ToString();
-        }
 
+          static string GetMD5(string myString)
+          {
+              using MD5 mi = MD5.Create();
+              byte[] buffer = Encoding.UTF8.GetBytes(myString);
+              byte[] newBuffer = mi.ComputeHash(buffer);
+              StringBuilder sb = new StringBuilder();
+              foreach (byte t in newBuffer)
+              {
+                  sb.Append(t.ToString("x2"));
+              }
+              return sb.ToString();
+          }
     }
 
     public static class ManifestParser

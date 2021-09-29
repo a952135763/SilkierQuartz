@@ -62,5 +62,6 @@ namespace SilkierQuartz
         public string TriggerDescription { get; set; } = string.Empty;
         public int Priority { get; set; } = 0;
         public bool RequestRecovery { get; set; } = true;
+        public bool Dormant { get; set; } = true;
     }
 }

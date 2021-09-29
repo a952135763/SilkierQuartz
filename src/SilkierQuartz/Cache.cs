@@ -2,6 +2,8 @@
 using Quartz.Impl.Matchers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using SilkierQuartz.Configuration;
 
 namespace SilkierQuartz
 {
@@ -13,8 +15,8 @@ namespace SilkierQuartz
             _services = services;
         }
 
-        private string[] _jobTypes;
-        public string[] JobTypes
+        private KeyValuePair<string, string>[] _jobTypes;
+        public KeyValuePair<string,string>[] JobTypes
         {
             get
             {
@@ -24,15 +26,22 @@ namespace SilkierQuartz
                     {
                         if (_jobTypes == null)
                         {
+                            var types = JobsListHelper.GetSilkierQuartzJobs();
+
 
 
                             var keys = _services.Scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup()).GetAwaiter().GetResult();
-                            var knownTypes = new List<string>();
-                            foreach (var key in keys)
+                            var knownTypes = new List<KeyValuePair<string, string>>();
+
+
+                            foreach (var t in types)
                             {
-                                var detail = _services.Scheduler.GetJobDetail(key).GetAwaiter().GetResult();
-                                knownTypes.Add(detail.JobType.RemoveAssemblyDetails());
+                                var so = t.GetCustomAttribute<SilkierQuartzAttribute>();
+                                knownTypes.Add(new KeyValuePair<string, string>( t.RemoveAssemblyDetails(), so.Identity));
                             }
+
+
+
                             UpdateJobTypes(knownTypes);
                         }
                     }
@@ -41,11 +50,11 @@ namespace SilkierQuartz
             }
         }
 
-        public void UpdateJobTypes(IEnumerable<string> list)
+        public void UpdateJobTypes(List<KeyValuePair<string, string>> list)
         {
             if (_jobTypes != null)
-                list = list.Concat(_jobTypes); // append existing types
-            _jobTypes = list.Distinct().OrderBy(x => x).ToArray();
+                list = (List<KeyValuePair<string, string>>)list.Concat(_jobTypes); // append existing types
+            _jobTypes = list.Distinct().OrderBy(x => x.Key).ToArray();
         }
 
     }
