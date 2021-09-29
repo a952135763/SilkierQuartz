@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;ENABLE_AUTH</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="H.Formatters.Json" Version="12.0.3.6" />
+    <PackageReference Include="H.Pipes" Version="1.14.8" />
+    <PackageReference Include="MySql.Data" Version="8.0.26" />
+    <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
+    <PackageReference Include="Quartz.Serialization.Json" Version="3.3.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MessageStructure\MessageStructure.csproj" />
+    <ProjectReference Include="..\src\Quartz.Plugins.RecentHistory\Quartz.Plugins.RecentHistory.csproj" />
+    <ProjectReference Include="..\src\SilkierQuartz\SilkierQuartz.csproj" />
+  </ItemGroup>
+
+</Project>

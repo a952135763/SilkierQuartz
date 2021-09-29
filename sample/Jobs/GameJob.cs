@@ -11,6 +11,7 @@ using H.Pipes;
 using H.Pipes.Args;
 using MessageStructure;
 using Quartz.Plugins.RecentHistory;
+using SilkierQuartz.Example.GameProgram;
 
 namespace Jobs
 {
@@ -26,40 +27,41 @@ namespace Jobs
             JobKey jobKey = context.JobDetail.Key;
             JobDataMap data = context.MergedJobDataMap;
 
-
+            
             var a = context.JobDetail.Durable;//即时运行,还是计划运行
             var s = context.JobDetail.RequestsRecovery; //是不是重试
             Console.WriteLine($"执行任务:{jobKey.Group}.{jobKey.Name}");
-            var exePath = data.GetString("_GameName");
-            if (string.IsNullOrEmpty(exePath))
+            var gameUrl = data.GetString("_GameUrl");
+            var pipName = $"./{context.FireInstanceId}/{jobKey}";
+
+            if (string.IsNullOrEmpty(gameUrl))
             {
                 Console.WriteLine($"执行失败...必须需要参数_GameName");
                 throw new JobExecutionException($"必须需要参数_GameName");
             }
-            //获取文件下发
-            exePath = $"{Environment.CurrentDirectory}\\GameProgram\\{exePath}\\{exePath}.exe";
-            if (!File.Exists(exePath))
+            //自动todo::获取文件下发
+            var get = new AutoGet($"{Environment.CurrentDirectory}/GameTmp");
+            get.RunUrl(gameUrl,new string[]{ pipName },out var process);
+            if (process == null)
             {
-                Console.WriteLine($"执行失败...对应脚本不存在");
-                throw new JobExecutionException($"对应脚本不存在{exePath}");
+                throw new JobExecutionException($"执行失败...对应脚本拉取失败");
             }
-            var pipName = $"./{jobKey}/{context.Trigger.Key}"; 
             Channel<JobInfo> aevent = Channel.CreateUnbounded<JobInfo>();
 
 
-
-
-            return await Collection(aevent, exePath, pipName, context);
+            return await Collection(aevent, process, pipName, context);
 
         }
 
 
-        private async Task<IExecutionHistoryResult> Collection(Channel<JobInfo> endCh,string exePath,string pipName, IJobExecutionContext context)
+        private async Task<IExecutionHistoryResult> Collection(Channel<JobInfo> endCh,Process process, string pipName, IJobExecutionContext context)
         {
             JobDataMap data = context.MergedJobDataMap;
             var token = (CancellationToken)context.Get("token");
+
             StringBuilder outStr = new StringBuilder();
             StringBuilder outLogStr = new StringBuilder();
+
             var targetCount = data.GetIntValue("_OutputCount");
 
             //启动进程通讯,out
@@ -76,7 +78,7 @@ namespace Jobs
                 await args.Connection.WriteAsync(new PipeMessage()
                 {
                     Id = -1,
-                    Input = $"{pipName}-{context.FireTimeUtc.ToLocalTime()}",
+                    Input = $"{context.JobDetail.Key}-{context.FireTimeUtc.ToLocalTime()}",
                 });
             };
             outServer.MessageReceived += async (sender, args) =>
@@ -87,19 +89,15 @@ namespace Jobs
             _ = outServer.StartAsync(token);
 
 
-            
-            if (!StartProcess(exePath, pipName, out var process))
-            {
-                throw new Exception("启动进程出错");
-            }
+
+            process.Start();
 
             token.Register(async () =>
             {
                 //任务被取消
                 await outServer.WriteAsync(new PipeMessage() { Id = 3 });
                 await endCh.Writer.WriteAsync(new JobInfo() { warning = "任务被取消" });
-                process?.Close();
-                process?.Kill();
+                TryStopProcess(process);
                 process = null;
                 Console.WriteLine("任务被远程取消");
             });
@@ -108,23 +106,22 @@ namespace Jobs
             //等待进程退出,不正常退出都提示!
             _ = Task.Run(async () =>
             {
-                await process.WaitForExitAsync(source.Token);
-                await endCh.Writer.WriteAsync(new JobInfo() { error = "进程提前退出!" }, source.Token);
+                await process?.WaitForExitAsync(source.Token);
+                await endCh.Writer.WriteAsync(new JobInfo() { warning = "进程被意外关闭!可能数据丢失" }, source.Token);
             }, source.Token);
+
+
+
             var info = await endCh.Reader.ReadAsync(token);//等待触发消息通知
             source.Cancel(true);//取消进程等待
             await outServer.StopAsync();//有消息了!任务不是出错就是完成了,直接关闭通讯
-            if (process is { HasExited: false }) //看一哈任务完成 进程有没有关闭 没有则结束进程
-            {
-                process.Kill();
-                process = null;
-            }
-
+            TryStopProcess(process);//尝试关闭进程
+            process = null;
 
             //任务完成,查看状态!
             if (!string.IsNullOrEmpty(info.error))
             {
-                //任务没有正常完成,抛出错误!
+                //任务没有正常完成,抛出错误!是没法记录日志和输出数据的 todo::运行中输出数据和日志实时保存
                 throw new JobExecutionException(info.error);
             }
             //任务正常完成
@@ -143,6 +140,21 @@ namespace Jobs
             p.StartInfo.FileName = exePath;
             p.StartInfo.Arguments = arg;
             return p.Start();
+        }
+
+        private void TryStopProcess(Process p)
+        {
+            if (p is { })
+            {
+                try
+                {
+                    p.Kill();
+                }
+                catch (Exception)
+                {
+                }
+
+            }
         }
 
         private async Task OnEventHandler(object sender, 

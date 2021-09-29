@@ -18,13 +18,15 @@ namespace Quartz.Plugins.RecentHistory
         public Type StoreType { get; set; }
         public string ConnectionString { get; set; }
         public string ConnectionType { get; set; }
+        public string TheServer { get; set; }
 
         public Task Initialize(string pluginName, IScheduler scheduler, CancellationToken cancellationToken = default(CancellationToken))
         {
             Name = pluginName;
             _scheduler = scheduler;
-
             _scheduler.ListenerManager.AddJobListener(this, GroupMatcher<JobKey>.AnyGroup());
+            //
+
             return Task.FromResult(0);
         }
 

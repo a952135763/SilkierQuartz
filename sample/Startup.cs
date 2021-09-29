@@ -67,7 +67,7 @@ namespace SilkierQuartz.Example
                 //表前缀
                 properties["quartz.jobStore.tablePrefix"] = "QRTZ_";
                 //连接字符串
-                properties["quartz.dataSource.myDS.connectionString"] = "Server=localhost;Database=qze;Uid=root;Pwd=H9MvYSqY3JmAC4aj;SslMode=None";
+                properties["quartz.dataSource.myDS.connectionString"] = "Server=47.107.180.26;Port=3333;Database=jobstest;Uid=jobstest;Pwd=pNm567m2Td7pC3ZA;SslMode=None";
                 properties["quartz.dataSource.myDS.provider"] = "MySql";
 
                 //json序列化
@@ -76,20 +76,23 @@ namespace SilkierQuartz.Example
 
                 //群集信息
                 properties["quartz.scheduler.instanceName"] = "GameJobs";
-                //节点名称,必须在群集中唯一
+                //节点名称,必须在群集中唯一！禁止同一台电脑开启两个程序
                 properties["quartz.scheduler.instanceId"] = $"{Dns.GetHostName()}";
                 properties["quartz.jobStore.clustered"] = "true";
                 properties["quartz.jobStore.clusterCheckinInterval"] = "2000";
 
 
                 //最大运行线程数量
-                properties["quartz.threadPool.maxConcurrency"] = "20";
+                properties["quartz.threadPool.maxConcurrency"] = "1";
 
-                //作业监控日志插件,监控数据
+
+
+                //作业监控日志插件,监控数据,群集数据上报
                 properties["quartz.plugin.recentHistory.type"] = "Quartz.Plugins.RecentHistory.ExecutionHistoryPlugin,Quartz.Plugins.RecentHistory";
                 properties["quartz.plugin.recentHistory.storeType"] = "Quartz.Plugins.RecentHistory.LastingExecutionHistoryStore,Quartz.Plugins.RecentHistory";
                 properties["quartz.plugin.recentHistory.connectionType"] = "Mysql";
-                properties["quartz.plugin.recentHistory.connectionString"] = "Server=localhost;Database=qze;Uid=root;Pwd=H9MvYSqY3JmAC4aj;SslMode=None";
+                properties["quartz.plugin.recentHistory.connectionString"] = "Server=47.107.180.26;Port=3333;Database=jobstest;Uid=jobstest;Pwd=pNm567m2Td7pC3ZA;SslMode=None";
+                properties["quartz.plugin.recentHistory.theServer"] = "";
             } 
             );
             services.AddOptions();
