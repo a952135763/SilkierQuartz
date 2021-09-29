@@ -34,10 +34,8 @@ namespace SilkierQuartz.Example
                     DayOfWeekStartIndexZero = false,//Quartz uses 1-7 as the range
                     Use24HourTimeFormat = true
                 };
-               
-            }
-#if ENABLE_AUTH
-            ,
+
+            },
             authenticationOptions =>
             {
                 authenticationOptions.AuthScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -46,16 +44,8 @@ namespace SilkierQuartz.Example
                 authenticationOptions.UserName = "admin";
                 authenticationOptions.UserPassword = "123456";
                 authenticationOptions.AccessRequirement = SilkierQuartzAuthenticationOptions.SimpleAccessRequirement.AllowOnlyUsersWithClaim;
-            }
-#else 
-    ,
-            authenticationOptions =>
-            {
-                authenticationOptions.AccessRequirement = SilkierQuartzAuthenticationOptions.SimpleAccessRequirement.AllowAnonymous;
-            }
-#endif
-            ,
-            stdSchedulerFactoryOptions: properties =>
+            },
+            properties =>
             {
 
                 //数据库连接信息
@@ -89,17 +79,17 @@ namespace SilkierQuartz.Example
                 //作业监控日志插件,监控数据,群集数据上报
                 properties["quartz.plugin.recentHistory.type"] = "Quartz.Plugins.RecentHistory.ExecutionHistoryPlugin,Quartz.Plugins.RecentHistory";
                 properties["quartz.plugin.recentHistory.storeType"] = "Quartz.Plugins.RecentHistory.LastingExecutionHistoryStore,Quartz.Plugins.RecentHistory";
-                properties["quartz.plugin.recentHistory.connectionType"] = "Mysql";
-                properties["quartz.plugin.recentHistory.connectionString"] = "Server=47.107.180.26;Port=3333;Database=jobstest;Uid=jobstest;Pwd=pNm567m2Td7pC3ZA;SslMode=None";
-                properties["quartz.plugin.recentHistory.theServer"] = "";
-            } 
+                properties["quartz.plugin.recentHistory.connectionType"] = "Mysql";//用Mysql数据库
+                properties["quartz.plugin.recentHistory.connectionString"] = "Server=47.107.180.26;Port=3333;Database=jobstest;Uid=jobstest;Pwd=pNm567m2Td7pC3ZA;SslMode=None";//日志持久化
+                properties["quartz.plugin.recentHistory.theServer"] = "";//远程控制服务器连接信息
+            }
             );
             services.AddOptions();
             services.Configure<AppSettings>(Configuration);
             services.Configure<InjectProperty>(options => { options.WriteText = "This is inject string"; });
 
 
-          
+
             //自动注册所有job
 
 

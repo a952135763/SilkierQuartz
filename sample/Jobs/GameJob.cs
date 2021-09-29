@@ -41,7 +41,6 @@ namespace Jobs
                 Console.WriteLine($"执行失败...必须需要参数 _运行地址");
                 throw new JobExecutionException($"必须需要参数 _运行地址");
             }
-            //自动todo::获取文件下发
             var get = new AutoGet($"{Environment.CurrentDirectory}/GameTmp");
             get.RunUrl(gameUrl,new string[]{ pipName },out var process);
             if (process == null)
@@ -50,8 +49,8 @@ namespace Jobs
             }
             Channel<JobInfo> aevent = Channel.CreateUnbounded<JobInfo>();
 
-
-            return await Collection(aevent, process, pipName, context);
+           return await Collection(aevent, process, pipName, context);
+             
 
         }
 
@@ -60,9 +59,9 @@ namespace Jobs
         {
             JobDataMap data = context.MergedJobDataMap;
             var token = (CancellationToken)context.Get("token");
+            StringBuilder outStr = (StringBuilder)context.Get("outStr");
+            StringBuilder outLogStr = (StringBuilder)context.Get("outLogStr");
 
-            StringBuilder outStr = new StringBuilder();
-            StringBuilder outLogStr = new StringBuilder();
 
             var targetCount = data.GetIntValue("_完成数量");
 
@@ -123,7 +122,7 @@ namespace Jobs
             //任务完成,查看状态!
             if (!string.IsNullOrEmpty(info.error))
             {
-                //任务没有正常完成,抛出错误!是没法记录日志和输出数据的 todo::运行中输出数据和日志实时保存
+                //任务没有正常完成,抛出错误!是没法记录日志和输出数据的
                 throw new JobExecutionException(info.error);
             }
             //任务正常完成

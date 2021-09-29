@@ -2,6 +2,7 @@
 using Quartz.Spi;
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -58,6 +59,8 @@ namespace Quartz.Plugins.RecentHistory
         public Task JobToBeExecuted(IJobExecutionContext context, CancellationToken cancellationToken = default(CancellationToken))
         {
             //任务执行前
+            context.Put("outStr", new StringBuilder());
+            context.Put("outLogStr", new StringBuilder());
             var entry = new ExecutionHistoryEntry()
             {
                 FireInstanceId = context.FireInstanceId,
@@ -163,11 +166,12 @@ namespace Quartz.Plugins.RecentHistory
                 entry.Cancelled = context.CancellationToken.IsCancellationRequested;
                 entry.FinishedTimeUtc = DateTime.UtcNow;
                 entry.ExceptionMessage = jobException?.GetBaseException()?.Message;
-                if (context.Result is IExecutionHistoryResult rest)
-                {
-                    entry.DetailedLogs = rest.OutLog;
-                    entry.OutputInfo = rest.Output;
-                }
+
+                StringBuilder outStr = (StringBuilder)context.Get("outStr");
+                StringBuilder outLogStr = (StringBuilder)context.Get("outLogStr");
+
+                entry.DetailedLogs = outStr?.ToString();
+                entry.OutputInfo = outLogStr?.ToString();
                 entry.JobEndData = context.MergedJobDataMap;
                 await _store.Save(entry);
             }
