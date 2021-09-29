@@ -35,7 +35,7 @@ namespace SilkierQuartz.Example
                     }
                     else
                     {
-                        webBuilder.UseUrls($"http://*:5000");
+                        webBuilder.UseUrls($"http://*:9999");
                     }
                 })
                 .ConfigureSilkierQuartzHost();

@@ -7,6 +7,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using HtmlAgilityPack;
@@ -25,31 +26,42 @@ namespace SilkierQuartz.Example.GameProgram
 
         public bool RunUrl(string url,string[] args,out Process process)
         {
-            var applicationUri = new Uri(url);
-            var str = applicationUri.Segments[^1];
-            if (!str.EndsWith(".application"))
+            Mutex mutex = new Mutex(true, $"ClickOnce{GetMD5(url)}");
+            mutex.WaitOne();
+            try
             {
-                //不是application
-                string htmlUri = url;
-                if (!str.EndsWith(".htm"))
+                var applicationUri = new Uri(url);
+                var str = applicationUri.Segments[^1];
+                if (!str.EndsWith(".application"))
                 {
-                    //不是htm
-                    htmlUri = url.EndsWith("/") ? $"{url}publish.htm" : $"{url}/publish.htm";
+                    //不是application
+                    string htmlUri = url;
+                    if (!str.EndsWith(".htm"))
+                    {
+                        //不是htm
+                        htmlUri = url.EndsWith("/") ? $"{url}publish.htm" : $"{url}/publish.htm";
+                    }
+                    HtmlDocument doc = new HtmlDocument();
+                    doc.LoadHtml(Get(htmlUri));
+                    var node = doc.DocumentNode.SelectSingleNode("//*[@class=\"JustThisApp\"]/a");
+                    if (node == null)
+                    {
+                        process = null;
+                        return false;
+                    }
+                    string application = node.Attributes["href"].Value;
+                    applicationUri = new Uri(new Uri(htmlUri), application);
                 }
-                HtmlDocument doc = new HtmlDocument();
-                doc.LoadHtml(Get(htmlUri));
-                var node =doc.DocumentNode.SelectSingleNode("//*[@class=\"JustThisApp\"]/a");
-                if (node == null)
-                {
-                    process = null;
-                    return false;
-                }
-                string application = node.Attributes["href"].Value;
-                applicationUri = new Uri(new Uri(htmlUri), application);
-            }
-            process = RunWithTempFolder(applicationUri, args);
+                process = RunWithTempFolder(applicationUri, args);
 
-            return true;
+                return true;
+            }
+            finally
+            {
+                mutex.ReleaseMutex();
+                mutex.Dispose();
+            }
+           
         }
 
 
@@ -71,7 +83,7 @@ namespace SilkierQuartz.Example.GameProgram
         }
         Process RunWithTempFolder(Uri url, string[] args)
         {
-            var localPath = CreateTempFolder(url.ToString());
+            var localPath = CreateTempFolder(url);
             try
             {
                 return RunFromDirectory(localPath.FullName, url, args);
@@ -90,9 +102,11 @@ namespace SilkierQuartz.Example.GameProgram
            return co.ApplicationManifest.Start(args);
         }
 
-         DirectoryInfo CreateTempFolder(string url)
-        {
-            string path = $"{RootPath}\\{GetMD5(url)}";
+         DirectoryInfo CreateTempFolder(Uri url)
+         {
+             var Name = url.LocalPath.Split('/')[^1].Replace(".application", "");
+
+            string path = $"{RootPath}\\{Name}";
             return Directory.CreateDirectory(path);
         }
 
@@ -173,8 +187,6 @@ namespace SilkierQuartz.Example.GameProgram
             string fileName = Path.Combine(ApplicationManifest.LocalPath, ApplicationManifest.CommandLine);
             if (File.Exists(fileName))
             {
-
-
                 return;
             }
             else
