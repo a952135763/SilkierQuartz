@@ -28,21 +28,24 @@ namespace Jobs
                 }
                 var res = await Run(context);
                 context.Result = res;
-                Console.WriteLine("任务结束");
             }
             catch (OperationCanceledException)
             {
+                Console.WriteLine("任务取消");
                 //此错误直接取消
             }
             catch (JobExecutionException)
             {
+                Console.WriteLine("任务执行失败");
                 throw;
             }
             catch (Exception e)
             {
+                Console.WriteLine("任务出错");
                 Console.WriteLine(e);
                 throw new JobExecutionException(e, true);
             }
+            Console.WriteLine("任务结束");
         }
 
         protected abstract Task<IExecutionHistoryResult> Run(IJobExecutionContext context);
