@@ -170,8 +170,8 @@ namespace Quartz.Plugins.RecentHistory
                 StringBuilder outStr = (StringBuilder)context.Get("outStr");
                 StringBuilder outLogStr = (StringBuilder)context.Get("outLogStr");
 
-                entry.DetailedLogs = outStr?.ToString();
-                entry.OutputInfo = outLogStr?.ToString();
+                entry.DetailedLogs = outLogStr?.ToString();
+                entry.OutputInfo = outStr?.ToString();
                 entry.JobEndData = context.MergedJobDataMap;
                 await _store.Save(entry);
             }

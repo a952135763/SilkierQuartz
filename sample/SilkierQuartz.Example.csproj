@@ -11,6 +11,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="GameTmp\**" />
+    <Content Remove="GameTmp\**" />
+    <EmbeddedResource Remove="GameTmp\**" />
+    <None Remove="GameTmp\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="H.Formatters.Json" Version="12.0.3.6" />
     <PackageReference Include="H.Pipes" Version="1.14.8" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.37" />

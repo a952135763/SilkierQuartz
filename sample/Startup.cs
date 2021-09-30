@@ -72,7 +72,7 @@ namespace SilkierQuartz.Example
 
 
                 //最大运行线程数量
-                properties["quartz.threadPool.maxConcurrency"] = "20";
+                properties["quartz.threadPool.maxConcurrency"] = "10";
 
 
 
