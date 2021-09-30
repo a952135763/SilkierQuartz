@@ -37,6 +37,7 @@ namespace Quartz.Plugins.RecentHistory
                 ICacheService myCache = new SugarCache();
                 sqlClient = new SqlSugarScope(new ConnectionConfig()
                 {
+                    
                     ConnectionString = ConnectionString,
                     DbType = dbType,
                     IsAutoCloseConnection = true,

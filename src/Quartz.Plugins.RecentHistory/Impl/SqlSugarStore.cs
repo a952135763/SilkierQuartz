@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Quartz.Impl.Matchers;
 using Quartz.Spi;
 
-namespace Quartz.Impl.RedisJobStore
+namespace Quartz.Impl.SqlSugarStore
 {
-    public class RedisJobStore: IJobStore
+    public class SqlSugarStore : IJobStore
     {
         public Task Initialize(ITypeLoadHelper loadHelper, ISchedulerSignaler signaler,
             CancellationToken cancellationToken = new CancellationToken())
